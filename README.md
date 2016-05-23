@@ -119,17 +119,6 @@ curl -i -X PUT -H 'Content-Type: application/json' -H "Authorization: Bearer $TO
 curl -i -X DELETE -H "Authorization: Bearer $TOKEN" http://localhost:5000/v1/pages/57387dd4b54537c3ea52321f
 ```
 
-## Validation with Schema
-
-```
-(require '[schema.core :as s])
-(require '[app.models.pages :as pages])
-(def checker (s/checker (:schema pages/model)))
-(checker {:titles "foobar"})
-; => {:title missing-required-key, :titles disallowed-key}
-(= (:title (checker {:titles "foobar"})) 'missing-required-key)
-```
-
 ## Using Components
 
 ```
