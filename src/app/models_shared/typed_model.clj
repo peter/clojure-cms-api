@@ -5,7 +5,11 @@
     (assoc doc :type (name type))))
 
 (def typed-schema {
-  :type {:type "string"}
+  :type "object"
+  :properties {
+    :type {:type "string"}
+  }
+  :required [:type]
 })
 
 (def typed-callbacks {

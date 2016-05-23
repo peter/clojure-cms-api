@@ -15,9 +15,12 @@
       doc)))
 
 (def published-schema {
-  :published_version {:type "integer" :minimum 1 :optional true :versioned false}
-  :publish_at {:type "datetime" :optional true :versioned false}
-  :unpublish_at {:type "datetime" :optional true :versioned false}
+  :type "object"
+  :properties {
+    :published_version {:type "integer" :minimum 1 :versioned false}
+    :publish_at {:type "string" :format "date-time" :versioned false}
+    :unpublish_at {:type "string" :format "date-time" :versioned false}
+  }
 })
 
 (def published-callbacks {

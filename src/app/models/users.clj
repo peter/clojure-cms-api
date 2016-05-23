@@ -8,11 +8,16 @@
 (def spec (generate-spec {
   :type :users
   :schema {
-    :name {:type "string"}
-    :email {:type "string"}
-    :password {:type "string"}
-    :access_token {:type "string"}
-    :access_token_created_at {:type "datetime"}
+    :type "object"
+    :properties {
+      :name {:type "string"}
+      :email {:type "string"}
+      :password {:type "string"}
+      :access_token {:type "string"}
+      :access_token_created_at {:type "string" :format "date-time"}
+    }
+    :additionalProperties false
+    :required [:name :email :password]
   }
   :indexes {
     [:email] {:unique true}

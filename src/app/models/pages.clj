@@ -5,8 +5,8 @@
             [app.models-shared.audited-model :refer [audited-callbacks audited-schema]]
             [app.models-shared.versioned-model :refer [versioned-callbacks versioned-schema]]
             [app.models-shared.published-model :refer [published-callbacks published-schema]]
-            [app.models-shared.validated-model :refer [validated-callbacks validated-schema]]
-            [app.framework.model-validations :refer [with-model-errors]]))
+            [app.models-shared.validated-model :refer [validated-callbacks]]
+            [app.framework.model-validations :refer [merge-schemas with-model-errors]]))
 
 (def spec (generate-spec {
   :type :pages
@@ -16,14 +16,18 @@
                               versioned-callbacks
                               published-callbacks
                               validated-callbacks)
-  :schema (merge id-schema
-                 typed-schema
-                 audited-schema
-                 versioned-schema
-                 published-schema
-                 validated-schema {
-    :title {:type "string"}
-    :body {:type "string" :optional true}
+  :schema (merge-schemas id-schema
+                         typed-schema
+                         audited-schema
+                         versioned-schema
+                         published-schema {
+    :type "object"
+    :properties {
+      :title {:type "string"}
+      :body {:type "string"}
+    }
+    :additionalProperties false
+    :required [:title]
   })
   :indexes {
     [:title] {:unique true}

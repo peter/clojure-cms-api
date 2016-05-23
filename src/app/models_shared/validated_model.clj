@@ -6,15 +6,6 @@
     (with-model-errors doc errors)
     doc))
 
-(def validated-schema {
-  :id {:type "integer"}
-  :type {:type "string"}
-  :created_at {:type "datetime" :api_writable false :versioned false}
-  :created_by {:type "string" :api_writable false :versioned false}
-  :updated_at {:type "datetime" :api_writable false :optional true :versioned false}
-  :updated_by {:type "string" :api_writable false :optional true :versioned false}
-})
-
 ; NOTE: we usually want validation to happen last of the before callbacks. The create/update
 ;       callbacks execute after the save callbacks.
 (def validated-callbacks {

@@ -10,7 +10,12 @@
     (assoc doc :id id)))
 
 (def id-schema {
-  :id {:type "integer"}
+  :type "object"
+  :properties {
+    :_id {:type "string"}
+    :id {:type "integer"}
+  }
+  :required [:id]
 })
 
 (def id-callbacks {

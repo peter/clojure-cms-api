@@ -12,44 +12,88 @@
   (let [existing-doc {:changed "changed" :removed "removed"}
         new-doc {:changed "changed EDIT" :added "added"}
         doc (with-meta new-doc {:existing-doc existing-doc})
+        model-spec {:schema {
+          :type "object"
+          :properties {
+            :changed {:type "string"}
+            :removed {:type "string"}
+            :added {:type "string"}
+          }
+        }}
         expected {
           :changed {:from "changed" :to "changed EDIT"}
           :removed {:from "removed" :to nil}
           :added {:from nil :to "added"}}]
-    (model-changes doc) => expected))
+    (model-changes model-spec doc) => expected))
 
-(fact "model-changed?: with one argument returns true if there is any change in doc"
+(fact "model-changed?: with two arguments returns true if there is any change in doc"
   (let [existing-doc {:title "title"}
         new-doc {:title "title changed"}
-        doc (with-meta new-doc {:existing-doc existing-doc})]
-      (model-changed? doc) => truthy))
+        doc (with-meta new-doc {:existing-doc existing-doc})
+        model-spec {:schema {
+          :type "object"
+          :properties {
+            :title {:type "string"}
+          }
+        }}]
+      (model-changed? model-spec doc) => truthy))
 
-(fact "model-changed?: with one argument returns false if there is no change in doc"
+(fact "model-changed?: with two arguments returns false if there is no change in doc"
   (let [existing-doc {:title "title"}
         new-doc {:title "title"}
-        doc (with-meta new-doc {:existing-doc existing-doc})]
-      (model-changed? doc) => falsey))
+        doc (with-meta new-doc {:existing-doc existing-doc})
+        model-spec {:schema {
+          :type "object"
+          :properties {
+            :title {:type "string"}
+          }
+        }}]
+      (model-changed? model-spec doc) => falsey))
 
-(fact "model-changed?: with two arguments returns true if certain argument has changed"
+(fact "model-changed?: with three arguments returns true if certain argument has changed"
   (let [existing-doc {:title "title"}
         new-doc {:title "title changed"}
-        doc (with-meta new-doc {:existing-doc existing-doc})]
-      (model-changed? doc :title) => truthy))
+        doc (with-meta new-doc {:existing-doc existing-doc})
+        model-spec {:schema {
+          :type "object"
+          :properties {
+            :title {:type "string"}
+          }
+        }}]
+      (model-changed? model-spec doc :title) => truthy))
 
-(fact "model-changed?: with two arguments returns false if certain argument has not changed"
+(fact "model-changed?: with three arguments returns false if certain argument has not changed"
   (let [existing-doc {:title "title"}
         new-doc {:title "title changed"}
-        doc (with-meta new-doc {:existing-doc existing-doc})]
-      (model-changed? doc :body) => falsey))
+        doc (with-meta new-doc {:existing-doc existing-doc})
+        model-spec {:schema {
+          :type "object"
+          :properties {
+            :title {:type "string"}
+          }
+        }}]
+      (model-changed? model-spec doc :body) => falsey))
 
-(fact "model-changed?: with three arguments returns true if certain argument has changed from one value to another"
+(fact "model-changed?: with five arguments returns true if certain argument has changed from one value to another"
   (let [existing-doc {:title "title"}
         new-doc {:title "title changed"}
-        doc (with-meta new-doc {:existing-doc existing-doc})]
-      (model-changed? doc :title "title" "title changed") => truthy))
+        doc (with-meta new-doc {:existing-doc existing-doc})
+        model-spec {:schema {
+          :type "object"
+          :properties {
+            :title {:type "string"}
+          }
+        }}]
+      (model-changed? model-spec doc :title "title" "title changed") => truthy))
 
-(fact "model-changed?: with three arguments returns false if certain argument has not changed from one value to another"
+(fact "model-changed?: with five arguments returns false if certain argument has not changed from one value to another"
   (let [existing-doc {:title "title"}
         new-doc {:title "title changed"}
-        doc (with-meta new-doc {:existing-doc existing-doc})]
-      (model-changed? doc :title "title" "title changed different") => falsey))
+        doc (with-meta new-doc {:existing-doc existing-doc})
+        model-spec {:schema {
+          :type "object"
+          :properties {
+            :title {:type "string"}
+          }
+        }}]
+      (model-changed? model-spec doc :title "title" "title changed different") => falsey))

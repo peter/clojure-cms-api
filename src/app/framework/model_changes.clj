@@ -6,7 +6,7 @@
 
 (defn tracked-attributes [model-spec]
   (let [schema (:schema model-spec)]
-    (set (filter #(api-writable? (% schema)) (keys schema)))))
+    (set (filter #(api-writable? (% schema)) (keys (:properties schema))))))
 
 (defn model-changes [model-spec doc]
   (let [from (get (meta doc) :existing-doc {})

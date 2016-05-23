@@ -8,7 +8,7 @@
   (get attribute-schema :versioned true))
 
 (defn versioned-attributes [schema]
-  (filter #(versioned-attribute? (% schema)) (keys schema)))
+  (filter #(versioned-attribute? (% schema)) (keys (:properties schema))))
 
 (defn increment-version? [model-spec doc]
   (not-empty (select-keys (model-changes model-spec doc)
@@ -37,10 +37,16 @@
   doc)
 
 (def versioned-schema {
-  :version {:type "integer" :minimum 1 :api_writable false}})
+  :type "object"
+  :properties {
+    :version {:type "integer" :minimum 1 :api_writable false}
+  }
+  :required [:version]
+})
 
 (def versioned-callbacks {
-    :save {
-      :before [set-version-callback]
-      :after [create-version-callback]
-    }})
+  :save {
+    :before [set-version-callback]
+    :after [create-version-callback]
+  }
+})

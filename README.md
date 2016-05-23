@@ -1,8 +1,11 @@
 # Clojure CMS API
 
-This is a basic CMS REST API based on Mongodb/Clojure with authentication and versioning support.
+This is a basic CMS REST API based on Mongodb/Clojure with features like user authentication,
+JSON schema validation, versioning, and changelog.
 
 ## TODO
+
+* Remove versions after delete
 
 * validation
   * put attributes under properties in schema
