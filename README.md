@@ -80,7 +80,7 @@ Creating admin user:
 
 ```
 (require '[app.system])
-(def system (app.system/-main))
+(def system (app.system/-main :start-web false))
 (require '[app.models.users :as users])
 (users/create (:database system) {:name "Admin User" :email "admin@example.com" :password "admin"})
 ```
@@ -89,7 +89,7 @@ Check token expiry:
 
 ```
 (require '[app.system])
-(def system (app.system/-main))
+(def system (app.system/-main :start-web false))
 (require '[app.models.users :as users])
 (def user (users/find-one (:database system) {:email "admin@example.com"}))
 (users/token-expired? user (get-in system [:app :config]))
@@ -157,7 +157,7 @@ curl -i -X DELETE -H "Authorization: Bearer $TOKEN" http://localhost:5000/v1/pag
 
 ```
 (require '[app.system])
-(def system (app.system/-main))
+(def system (app.system/-main :start-web false))
 (require '[app.api.crud-api :as crud-api :reload-all true])
 (require '[app.models.pages :as pages])
 (def api (crud-api/new-api :model-spec pages/spec))

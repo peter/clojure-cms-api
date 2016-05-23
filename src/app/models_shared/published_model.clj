@@ -21,7 +21,8 @@
 })
 
 (def published-callbacks {
-    :save {
-      :before [published-version-callback]
-      :after []
-    }})
+  :save {
+    :before [published-version-callback]
+    :after []
+  }
+})

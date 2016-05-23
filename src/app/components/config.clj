@@ -12,6 +12,7 @@
   :env env
   :port 5000
   :mongodb-url (str "mongodb://127.0.0.1/clojure-cms-api-" env)
+  :start-web true
 })
 
 (defn- env-key [config-key]
