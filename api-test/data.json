@@ -1,0 +1,26 @@
+{
+  "data": {
+    "pages": {
+      "start": {
+        "title": "Start page",
+        "body": "Start page body"
+      }
+    },
+    "users": {
+      "admin": {
+        "email": "admin@example.com",
+        "password": "admin"
+      }
+    },
+    "schema": {
+      "pages": {
+        "type": "object",
+        "properties": {
+          "title": {"type": "string"},
+          "body": {"type": "string"}
+        },
+        "required": ["title"]
+      }
+    }
+  }
+}
