@@ -22,6 +22,9 @@
     (parse-int string-or-int)
     (catch java.lang.NumberFormatException e nil)))
 
+(defn valid-int? [value]
+  (safe-parse-int value))
+
 (defn parse-bool [value]
   (not (contains? #{nil false "0" "f" "false"} value)))
 

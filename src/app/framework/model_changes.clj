@@ -12,7 +12,7 @@
   (let [from (get (meta doc) :existing-doc {})
         to doc
         changed-attributes (filter #(changed-value? (% from) (% to)) (tracked-attributes model-spec))]
-    (not-empty (into {} (map #(vector % {:from (from %) :to (to %)}) changed-attributes)))))
+    (not-empty (into {} (map #(vector % {:from (% from) :to (% to)}) changed-attributes)))))
 
 (defn model-changed?
   ([model-spec doc attribute from to]

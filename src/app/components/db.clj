@@ -80,9 +80,9 @@
         result (mc/insert (:db database) coll created-doc)]
     {:doc (json-friendly created-doc) :result result}))
 
-; Does an upsert. For partial update - use: {:$set {:foo "bar"}}
+; For partial update - use: {:$set {:foo "bar"}}
 (defn update [database coll query doc]
-  (let [result (mc/update (:db database) coll (mongo-friendly query) (mongo-friendly doc) {:upsert true})
+  (let [result (mc/update (:db database) coll (mongo-friendly query) (mongo-friendly doc))
         updated-doc (find-one database coll query)]
     {:doc updated-doc :result result}))
 

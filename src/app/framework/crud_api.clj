@@ -17,7 +17,7 @@
 
 (defn- update-attributes [model-spec request]
   (merge (write-attributes model-spec request)
-         (model-api/id-query (json-api/id request))
+         (model-api/id-query model-spec (json-api/id request))
          (updated-by request)))
 
 (defprotocol CrudApi

@@ -5,8 +5,6 @@ JSON schema validation, versioning, and changelog.
 
 ## TODO
 
-* Use numeric id attribute in CRUD API
-
 * Remove versions after delete
 
 * validation
@@ -112,16 +110,16 @@ export TOKEN=<token in header response above>
 curl -i -X POST -H 'Content-Type: application/json' -H "Authorization: Bearer $TOKEN" -d '{"pages": {"title": "foo", "body": "bar"}}' http://localhost:5000/v1/pages
 
 # get
-curl -i http://localhost:5000/v1/pages/57387dd4b54537c3ea52321f
+curl -i http://localhost:5000/v1/pages/1
 
 # list
 curl -i http://localhost:5000/v1/pages
 
 # update
-curl -i -X PUT -H 'Content-Type: application/json' -H "Authorization: Bearer $TOKEN" -d '{"pages": {"title": "foo EDIT"}}' http://localhost:5000/v1/pages/57387dd4b54537c3ea52321f
+curl -i -X PUT -H 'Content-Type: application/json' -H "Authorization: Bearer $TOKEN" -d '{"pages": {"title": "foo EDIT"}}' http://localhost:5000/v1/pages/1
 
 # delete
-curl -i -X DELETE -H "Authorization: Bearer $TOKEN" http://localhost:5000/v1/pages/57387dd4b54537c3ea52321f
+curl -i -X DELETE -H "Authorization: Bearer $TOKEN" http://localhost:5000/v1/pages/1
 ```
 
 ## Using Components
