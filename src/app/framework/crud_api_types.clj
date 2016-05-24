@@ -1,8 +1,7 @@
 (ns app.framework.crud-api-types
   (:require [app.util.core :as u]
             [app.util.date :as d]
-            [app.framework.model-schema :refer [child-schema]]
-            [app.framework.model-attributes :refer [attribute-type]]
+            [app.framework.model-schema :refer [child-schema attribute-type]]
             [clojure.stacktrace]))
 
 (defn- coerce-map [coerce-fn attributes schema]
