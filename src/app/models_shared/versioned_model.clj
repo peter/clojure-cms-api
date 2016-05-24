@@ -8,7 +8,8 @@
   (get attribute-schema :versioned true))
 
 (defn versioned-attributes [schema]
-  (filter #(versioned-attribute? (% schema)) (keys (:properties schema))))
+  (filter #(versioned-attribute? (% (:properties schema)))
+          (keys (:properties schema))))
 
 (defn increment-version? [model-spec doc]
   (not-empty (select-keys (model-changes model-spec doc)

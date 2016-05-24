@@ -13,7 +13,7 @@
     :created_at {:type "string" :format "date-time" :api_writable false :versioned false}
     :created_by {:type "string" :api_writable false :versioned false}
     :updated_at {:type "string" :format "date-time" :api_writable false :versioned false}
-    :updated_by {:type "string" :api_writable false :versioned false}
+    :updated_by {:type "string" :api_writable false}
   }
   :required [:created_at :created_by]
 })
