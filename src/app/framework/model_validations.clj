@@ -22,9 +22,3 @@
 
 (defn validate-schema [doc schema]
   ((v/validator (without-custom-keys schema)) doc))
-
-; TODO: use "allOf" to combine JSON schemas instead?
-(defn merge-schemas [& schemas]
-  (let [properties (apply merge (map :properties schemas))
-        required (apply concat (map :required schemas))]
-    (assoc (apply merge schemas) :properties properties :required required)))

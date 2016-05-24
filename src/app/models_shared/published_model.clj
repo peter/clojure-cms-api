@@ -29,3 +29,8 @@
     :after []
   }
 })
+
+(defn published-spec [& options] {
+  :schema published-schema
+  :callbacks published-callbacks
+})

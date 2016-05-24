@@ -44,8 +44,8 @@
     (assoc doc :_id (ObjectId. (:_id doc)))
     doc))
 
-(defn mongo-map [columns]
-  (apply array-map (interleave columns (repeat 1))))
+(defn mongo-map [fields]
+  (apply array-map (interleave fields (repeat 1))))
 
 (defn valid-object-id? [object-id]
   (re-matches #"^[0-9a-fA-F]{24}$" object-id))
@@ -54,8 +54,8 @@
 ; Public Mongo API
 ; --------------------------------------------------------
 
-(defn ensure-index [database coll columns options]
-  (mc/ensure-index (:db database) coll (mongo-map columns) options))
+(defn ensure-index [database coll fields options]
+  (mc/ensure-index (:db database) coll (mongo-map fields) options))
 
 (defn find
   ([database coll query opts]

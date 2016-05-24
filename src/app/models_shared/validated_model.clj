@@ -16,3 +16,7 @@
     :before [validate-schema-callback]
   }
 })
+
+(defn validated-spec [& options] {
+  :callbacks validated-callbacks
+})

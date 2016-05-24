@@ -17,3 +17,8 @@
       :before [type-callback]
     }
 })
+
+(defn typed-spec [& options] {
+  :schema typed-schema
+  :callbacks typed-callbacks
+})

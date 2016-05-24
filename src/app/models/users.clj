@@ -19,10 +19,10 @@
     :additionalProperties false
     :required [:name :email :password]
   }
-  :indexes {
-    [:email] {:unique true}
-    [:access_token] {:unique true}
-  }}))
+  :indexes [
+    {:fields [:email] :unique true}
+    {:fields [:access_token] :unique true}
+  ]}))
 
 (defn authenticate [user password]
   (and user (encrypt/check password (:password user))))

@@ -52,6 +52,12 @@
   }
 })
 
-(defn versioned-indexes [type] {
-  [:id :version] {:unique true :coll (versioned-coll {:type type})}
+(defn versioned-indexes [type] [
+  {:fields [:id :version] :coll (versioned-coll {:type type}) :unique true}
+])
+
+(defn versioned-spec [& {:keys [type]}] {
+  :schema versioned-schema
+  :callbacks versioned-callbacks
+  :indexes (versioned-indexes type)
 })

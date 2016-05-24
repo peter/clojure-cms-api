@@ -26,3 +26,8 @@
     :before [audit-update-callback]
   }
 })
+
+(defn audited-spec [& options] {
+    :schema audited-schema
+    :callbacks audited-callbacks
+})

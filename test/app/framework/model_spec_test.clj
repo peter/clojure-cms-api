@@ -6,14 +6,59 @@
   (model-spec/save-callbacks {:create {:before [:foo]} :update {:before [:bar]} :save {:before [:bla] :after [:baz]}}) =>
     {:create {:before [:bla] :after [:baz]} :update {:before [:bla] :after [:baz]}})
 
-(fact "callbacks: does not touch callbacks without save"
-  (model-spec/callbacks {:create {:before [:foo]} :update {:before [:bar]}}) =>
+(fact "normalize-callbacks: does not touch callbacks without save"
+  (model-spec/normalize-callbacks {:create {:before [:foo]} :update {:before [:bar]}}) =>
     {:create {:before [:foo]} :update {:before [:bar]}})
 
-(fact "callbacks: merges save callbacks with update/create callbacks"
-  (model-spec/callbacks {:save {:before [:foo]} :update {:before [:bar]}}) =>
+(fact "normalize-callbacks: merges save callbacks with update/create callbacks"
+  (model-spec/normalize-callbacks {:save {:before [:foo]} :update {:before [:bar]}}) =>
     {:create {:before [:foo]} :update {:before [:foo :bar]}})
 
-(fact "generate-spec: prepends save callbacks on update/create callbacks"
-  (model-spec/generate-spec {:callbacks {:save {:before [:type :audit]} :create {:before [:id]}}}) =>
-    {:callbacks {:update {:before [:type :audit]} :create {:before [:type :audit :id]}}})
+(fact "generate-spec: deep merges schema/callbacks/indexes for specs"
+  (let [spec1 {
+          :type "spec1"
+          :schema {
+            :properties {
+              :spec1 {:type "string"}
+            }
+            :required [:spec1]
+          }
+          :callbacks {
+            :create {
+              :before [:spec1]
+            }
+          }
+          :indexes [:spec1]
+        }
+        spec2 {
+          :type "spec2"
+          :schema {
+            :properties {
+              :spec2 {:type "integer"}
+            }
+            :required [:spec2]
+          }
+          :callbacks {
+            :create {
+              :before [:spec2]
+            }
+          }
+          :indexes [:spec2]
+        }
+        expect {
+          :type "spec2"
+          :schema {
+            :properties {
+              :spec1 {:type "string"}
+              :spec2 {:type "integer"}
+            }
+            :required [:spec1 :spec2]
+          }
+          :callbacks {
+            :create {
+              :before [:spec1 :spec2]
+            }
+          }
+          :indexes [:spec1 :spec2]
+        }]
+  (model-spec/generate-spec spec1 spec2) => expect))
