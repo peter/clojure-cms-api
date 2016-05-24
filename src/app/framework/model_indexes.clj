@@ -1,4 +1,4 @@
-(ns app.bootstrap.indexes
+(ns app.framework.model-indexes
   (:require [app.components.db :as db]
             [app.framework.model-reflect :refer [model-spec all-models]]))
 

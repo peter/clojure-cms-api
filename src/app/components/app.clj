@@ -2,7 +2,7 @@
   (:require [com.stuartsierra.component :as component]
             [clojure.string :as str]
             [app.middleware.core :as middleware]
-            [app.bootstrap.indexes :refer [ensure-indexes]]
+            [app.framework.model-indexes :refer [ensure-indexes]]
             [app.router.core :as router]
             [app.router.routes :refer [routes]]))
 
