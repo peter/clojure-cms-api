@@ -51,3 +51,7 @@
     :after [create-version-callback]
   }
 })
+
+(defn versioned-indexes [type] {
+  [:id :version] {:unique true :coll (versioned-coll {:type type})}
+})

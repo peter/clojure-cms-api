@@ -9,8 +9,6 @@ JSON schema validation, versioning, and changelog.
 
 * Default sort order id desc, support sort query parameter
 
-* id unique index
-
 * Use Swagger: https://github.com/metosin/ring-swagger
 
 * Remove versions after delete
@@ -23,9 +21,6 @@ JSON schema validation, versioning, and changelog.
   * deal with mongo errors?
 
 * scheduled publishing
-
-* versions collection
-  * id/version unique index
 
 * finish API tests (under api-test)
 

@@ -1,15 +1,17 @@
 (ns app.models.pages
   (:require [app.framework.model-spec :refer [merge-callbacks generate-spec]]
-            [app.models-shared.id-model :refer [id-callbacks id-schema]]
+            [app.models-shared.id-model :refer [id-callbacks id-schema id-indexes]]
             [app.models-shared.typed-model :refer [typed-callbacks typed-schema]]
             [app.models-shared.audited-model :refer [audited-callbacks audited-schema]]
-            [app.models-shared.versioned-model :refer [versioned-callbacks versioned-schema]]
+            [app.models-shared.versioned-model :refer [versioned-callbacks versioned-schema versioned-indexes]]
             [app.models-shared.published-model :refer [published-callbacks published-schema]]
             [app.models-shared.validated-model :refer [validated-callbacks]]
             [app.framework.model-validations :refer [merge-schemas with-model-errors]]))
 
+(def type :pages)
+
 (def spec (generate-spec {
-  :type :pages
+  :type type
   :callbacks (merge-callbacks id-callbacks
                               typed-callbacks
                               audited-callbacks
@@ -29,6 +31,7 @@
     :additionalProperties false
     :required [:title]
   })
-  :indexes {
+  :indexes (merge id-indexes
+                  (versioned-indexes type) {
     [:title] {:unique true}
-  }}))
+  })}))
