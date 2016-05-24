@@ -5,40 +5,33 @@ JSON schema validation, versioning, and changelog.
 
 ## TODO
 
+* Add more models with associations
+
+* Default sort order id desc, support sort query parameter
+
+* id unique index
+
+* Use Swagger: https://github.com/metosin/ring-swagger
+
 * Remove versions after delete
 
 * validation
-  * put attributes under properties in schema
   * max/min length for strings
   * gt/lt for numbers
-  * data type validation (integer, float, boolean, datetime)
-    * Nested object
-    * Nested array
   * enum (status)
   * unique constraint
   * deal with mongo errors?
 
 * scheduled publishing
 
-* test/refine versioning
-
-* update
-  * do not perform without changes?
-
 * versions collection
-  * id/version unique index?
-  * also on main collection same index
-
-* audit callbacks
+  * id/version unique index
 
 * finish API tests (under api-test)
 
+* more unit tests
+
 * comply more with jsonapi.org
-
-* Use Swagger: https://github.com/metosin/ring-swagger
-
-* index action
-  * Add order-by parameter?
 
 ## Starting the Server
 
