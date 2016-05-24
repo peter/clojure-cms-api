@@ -1,6 +1,7 @@
 (ns app.framework.model-api
   (:refer-clojure :exclude [find update delete count])
   (:require [app.components.db :as db]
+            [app.util.core :as u]
             [app.framework.model-validations :refer [with-model-errors model-not-updated]]
             [app.framework.model-changes :refer [model-changed?]]
             [app.framework.model-callbacks :refer [with-callbacks]]))
@@ -31,12 +32,16 @@
 (defn count [app model-spec query]
   (db/count (:database app) (coll model-spec) query))
 
-(defn- create-without-callbacks [app model-spec doc]
+(defn- exec-create-without-callbacks [app model-spec doc]
   (let [result (db/create (:database app) (coll model-spec) doc)]
     (with-meta (:doc result)
                (merge (meta doc) {:result result}))))
 
-(def create (with-callbacks create-without-callbacks :create))
+(def exec-create (with-callbacks exec-create-without-callbacks :create))
+
+(defn create [app model-spec doc]
+  (let [create-doc (u/compact doc)]
+    (exec-create app model-spec create-doc)))
 
 (defn- exec-update-without-callbacks [app model-spec doc]
   (let [result (db/update (:database app) (coll model-spec) (id-query (id-attribute doc)) doc)]
@@ -47,7 +52,7 @@
 
 (defn update [app model-spec doc]
   (let [existing-doc (find-one app model-spec (id-attribute doc))
-        merged-doc (with-meta (merge existing-doc doc) {:existing-doc existing-doc})]
+        merged-doc (with-meta (u/compact (merge existing-doc doc)) {:existing-doc existing-doc})]
     (if (model-changed? model-spec merged-doc)
       (exec-update app model-spec merged-doc)
       (with-model-errors doc model-not-updated))))

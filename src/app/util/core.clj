@@ -1,6 +1,17 @@
 (ns app.util.core
   (:require [clojure.string :as str]))
 
+(defn blank?
+  "returns true if value is nil or empty"
+  [value]
+  (cond (nil? value) true
+        (and (string? value) (= (count (str/trim value)) 0)) true
+        (and (coll? value) (= (count value) 0)) true
+        :else false))
+
+(defn present? [value]
+  (not (blank? value)))
+
 (defn parse-int
       "idempotent string to integer conversion"
       [string-or-int]

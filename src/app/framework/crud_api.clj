@@ -3,14 +3,20 @@
             [app.framework.json-api :as json-api]
             [app.framework.model-attributes :refer [api-writable-attributes]]
             [app.framework.crud-api-audit :refer [updated-by created-by save-changelog]]
+            [app.framework.crud-api-types :refer [coerce-attribute-types]]
             [app.logger :as logger]))
 
+(defn- write-attributes [model-spec request]
+  (-> (json-api/attributes model-spec request)
+      (api-writable-attributes (:schema model-spec))
+      (coerce-attribute-types (:schema model-spec))))
+
 (defn- create-attributes [model-spec request]
-  (merge (api-writable-attributes (json-api/attributes model-spec request) (:schema model-spec))
+  (merge (write-attributes model-spec request)
          (created-by request)))
 
 (defn- update-attributes [model-spec request]
-  (merge (api-writable-attributes (json-api/attributes model-spec request) (:schema model-spec))
+  (merge (write-attributes model-spec request)
          (model-api/id-query (json-api/id request))
          (updated-by request)))
 

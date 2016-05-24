@@ -5,6 +5,8 @@ JSON schema validation, versioning, and changelog.
 
 ## TODO
 
+* Use numeric id attribute in CRUD API
+
 * Remove versions after delete
 
 * validation

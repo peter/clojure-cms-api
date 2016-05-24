@@ -25,6 +25,10 @@
       [date-or-string]
   (if (string? date-or-string) (f/parse (f/formatters :date) date-or-string) date-or-string))
 
+; JSON date from JavaScript (ISO 8601): "2015-08-25T10:51:59.076Z"
+(defn parse-datetime [date-string]
+  (f/parse (f/formatters :date-time) date-string))
+
 (defn format-date
       "Generate date string like \"2015-01-01\""
       [date & {:keys [format] :or {format :date}}]

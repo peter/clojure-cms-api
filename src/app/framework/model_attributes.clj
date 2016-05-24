@@ -1,5 +1,10 @@
 (ns app.framework.model-attributes)
 
+(defn attribute-type [schema attribute]
+  (cond
+    (= (:format schema) "date-time") "date"
+    :else (:type schema)))
+
 (defn api-writable? [attribute-schema]
   (get attribute-schema :api_writable true))
 

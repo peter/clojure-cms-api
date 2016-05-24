@@ -12,17 +12,6 @@
 
 (def model-not-updated [{:type "unchanged"}])
 
-(defn blank?
-  "returns true if value is nil or empty"
-  [value]
-  (cond (nil? value) true
-        (and (string? value) (= (count (str/trim value)) 0)) true
-        (and (coll? value) (= (count value) 0)) true
-        :else false))
-
-(defn present? [value]
-  (not (blank? value)))
-
 (def custom-property-keys #{:api_writable :versioned})
 
 (defn without-custom-keys
