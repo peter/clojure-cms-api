@@ -1,22 +1,12 @@
 (ns app.models.pages
   (:refer-clojure :exclude [type])
   (:require [app.framework.model-spec :refer [generate-spec]]
-            [app.models-shared.id-model :refer [id-spec]]
-            [app.models-shared.typed-model :refer [typed-spec]]
-            [app.models-shared.audited-model :refer [audited-spec]]
-            [app.models-shared.versioned-model :refer [versioned-spec]]
-            [app.models-shared.published-model :refer [published-spec]]
-            [app.models-shared.validated-model :refer [validated-spec]]))
+            [app.models-shared.content-base-model :refer [content-base-spec]]))
 
 (def type :pages)
 
 (def spec (generate-spec
-  (id-spec)
-  (typed-spec)
-  (audited-spec)
-  (versioned-spec :type type)
-  (published-spec)
-  (validated-spec)
+  (content-base-spec type)
   {
   :type type
   :schema {
