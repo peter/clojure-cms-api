@@ -41,6 +41,7 @@
     {:methods #{:post} :path "/v1/login" :handler "sessions/create"}
 
     (crud-routes "pages")
+    (crud-routes "widgets")
   ]))
 
 (defn routes-with-handlers []

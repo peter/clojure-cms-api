@@ -11,12 +11,9 @@ JSON schema validation, versioning, and changelog.
 
 * Use Swagger: https://github.com/metosin/ring-swagger
 
-* Remove versions after delete
+* Apply JSON schema validation to model callbacks
 
 * validation
-  * max/min length for strings
-  * gt/lt for numbers
-  * enum (status)
   * unique constraint
   * deal with mongo errors?
 

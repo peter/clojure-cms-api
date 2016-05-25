@@ -1,8 +1,8 @@
-(ns app.models.pages
+(ns app.models.widgets
   (:require [app.framework.model-spec :refer [generate-spec]]
             [app.models-shared.content-base-model :refer [content-base-spec]]))
 
-(def model-type :pages)
+(def model-type :widgets)
 
 (def spec (generate-spec
   (content-base-spec model-type)
@@ -12,13 +12,8 @@
     :type "object"
     :properties {
       :title {:type "string"}
+      :widgets_type {:type "string"}
       :body {:type "string"}
-      :widget_ids {
-        :type "array"
-        :items {
-          :type "integer"
-        }
-      }
     }
     :additionalProperties false
     :required [:title]

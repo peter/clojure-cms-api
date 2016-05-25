@@ -37,6 +37,12 @@
     (let [result (db/create (:database options) (versioned-coll doc) (versioned-doc (:model-spec options) doc))]))
   doc)
 
+(defn remove-version-callbacks [doc options]
+  (let [id-attribute (model-api/id-attribute (:model-spec options))
+        query (select-keys doc [id-attribute])
+        result (db/delete (:database options) (versioned-coll doc) query)]
+    doc))
+
 (def versioned-schema {
   :type "object"
   :properties {
@@ -49,6 +55,9 @@
   :save {
     :before [set-version-callback]
     :after [create-version-callback]
+  }
+  :delete {
+    :after [remove-version-callbacks]
   }
 })
 
