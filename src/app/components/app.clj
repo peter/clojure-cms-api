@@ -4,7 +4,7 @@
             [app.middleware.core :as middleware]
             [app.framework.model-indexes :refer [ensure-indexes]]
             [app.router.core :as router]
-            [app.router.routes :refer [routes]]))
+            [app.routes :refer [routes-with-handlers]]))
 
 (defrecord Application [database config]
   component/Lifecycle
@@ -12,7 +12,8 @@
   (start [component]
     (let [config (:config config)
           app {:config config :database database}
-          handler (-> (router/create-handler app (routes))
+          routes (routes-with-handlers)
+          handler (-> (router/create-handler app routes)
                       (middleware/wrap app))]
       (println "Starting Application config:" config)
       (ensure-indexes database)

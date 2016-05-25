@@ -1,6 +1,5 @@
 (ns app.router.core
-  (:require [app.router.handler :refer [lookup-handler]]
-            [app.logger :as logger]
+  (:require [app.logger :as logger]
             [app.util.resource :as resource]
             [app.router.match :as m]))
 
@@ -21,7 +20,7 @@
 (defn create-handler [app routes]
   (fn [request]
     (let [match (m/find-match routes request)
-          handler (if match (lookup-handler (:route match)) missing-handler)
+          handler (if match (get-in match [:route :handler]) missing-handler)
           request-with-params (update-in request [:params] merge (:params match))]
     (when match (log-route-match app request-with-params match))
     (handler app request-with-params))))
