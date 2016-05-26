@@ -7,11 +7,20 @@ JSON schema validation, versioning, and changelog.
 
 * Add more models with associations
 
-* Default sort order id desc, support sort query parameter
+* list endpoint
+  * Default sort order id desc, support sort query parameter
+  * query
+
+* get endpoint
+  * Include associated versions
+  * version query parameter (id|latest|published)
+   * which fields to include (cms needs more fields than www)
+
+* Associations/Relationships
+  * Include/embed associated docs on API get. Comply with jsonapi.org JSON structure.
+  * Validate id references before save
 
 * Use Swagger: https://github.com/metosin/ring-swagger
-
-* Apply JSON schema validation to model callbacks
 
 * validation
   * unique constraint
@@ -20,8 +29,6 @@ JSON schema validation, versioning, and changelog.
 * scheduled publishing
 
 * finish API tests (under api-test)
-
-* more unit tests
 
 * comply more with jsonapi.org
 
@@ -172,4 +179,14 @@ curl -i -X DELETE -H "Authorization: Bearer $TOKEN" http://localhost:5000/v1/pag
 ((v/validator schema) {:title "foobar" :publish_at "2012-04-23T18:25:43.511Z"})
 (require '[app.util.date :as d])
 ((v/validator schema) {:title "foobar" :publish_at (d/now)})
+```
+
+```
+(require '[scjsv.core :as v])
+(require '[app.util.core :as u :reload-all true])
+(require '[app.framework.model-spec :as model-spec])
+(require '[app.models.pages :as pages])
+((v/validator model-spec/spec-schema) (u/json-friendly-map pages/spec))
+(pprint (u/json-friendly-map pages/spec))
+(pprint model-spec/spec-schema)
 ```

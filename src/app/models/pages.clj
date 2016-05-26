@@ -13,7 +13,7 @@
     :properties {
       :title {:type "string"}
       :body {:type "string"}
-      :widget_ids {
+      :widgets_ids {
         :type "array"
         :items {
           :type "integer"
@@ -22,6 +22,9 @@
     }
     :additionalProperties false
     :required [:title]
+  }
+  :relationships {
+    :widgets {}
   }
   :indexes [
     {:fields [:title] :unique true}

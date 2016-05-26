@@ -1,11 +1,11 @@
 (ns app.framework.model-validations-test
   (:use midje.sweet)
-  (:require [app.framework.model-validations :refer [validate-schema]]))
+  (:require [app.framework.model-validations :refer [validate-model-schema]]))
 
-(fact "validate-schema: return nil if there are no schema errors"
-  (validate-schema {:title "The title"} {:type "object" :properties {:title {:type "string"}} :required [:title]})
+(fact "validate-model-schema: return nil if there are no schema errors"
+  (validate-model-schema {:type "object" :properties {:title {:type "string"}} :required [:title]} {:title "The title"})
     => nil)
 
-(fact "validate-schema: can return the required schema error"
-  (map :keyword (validate-schema {} {:type "object" :properties {:title {:type "string"}} :required [:title]}))
+(fact "validate-model-schema: can return the required schema error"
+  (map :keyword (validate-model-schema {:type "object" :properties {:title {:type "string"}} :required [:title]} {}))
     => ["required"])

@@ -1,0 +1,73 @@
+(ns app.framework.model-relationships-test
+  (:use midje.sweet)
+  (:require [app.framework.model-relationships :refer [relationship-options]]))
+
+(fact "relationship-options: can default from_coll/from_field/to_coll/to_field for has-many"
+  (let [relationship :widgets
+        model-spec {
+          :type :pages
+          :schema {
+            :type "object"
+            :properties {
+              :title {:type "string"}
+              :widgets_ids {:type "array"}
+            }
+          }
+          :relationships {
+            :widgets {}
+          }
+        }
+        expected {
+          :from_coll :pages
+          :from_field :widgets_ids
+          :to_coll :widgets
+          :to_field :id
+        }]
+    (relationship-options relationship model-spec) => expected))
+
+(fact "relationship-options: can default from_coll/from_field/to_coll/to_field for has-one"
+  (let [relationship :widgets
+        model-spec {
+          :type :pages
+          :schema {
+            :type "object"
+            :properties {
+              :title {:type "string"}
+              :widgets_id {:type "integer"}
+            }
+          }
+          :relationships {
+            :widgets {}
+          }
+        }
+        expected {
+          :from_coll :pages
+          :from_field :widgets_id
+          :to_coll :widgets
+          :to_field :id
+        }]
+    (relationship-options relationship model-spec) => expected))
+
+(fact "relationship-options: can specify from_coll/from_field/to_coll/to_field"
+  (let [relationship :widgets
+        options {
+          :from_coll :foobar
+          :from_field :foobar_ids
+          :to_coll :foo
+          :to_field :bar
+        }
+        model-spec {
+          :type :pages
+          :schema {
+            :type "object"
+            :properties {
+              :title {:type "string"}
+              :widgets_id {:type "integer"}
+            }
+          }
+          :relationships {
+            :widgets options
+          }
+        }
+        expected options]
+    (relationship-options relationship model-spec) => expected))

@@ -64,6 +64,19 @@
 (defn map-values [f m]
   (reduce (fn [altered-map [k v]] (assoc altered-map k (f v))) {} m))
 
+(defn deep-map-values [f m]
+  (reduce (fn [altered-map [k v]]
+            (let [new-value (cond
+                              (map? v) (deep-map-values f v)
+                              (coll? v) (map f v)
+                              :else (f v))]
+              (assoc altered-map k new-value)))
+          {}
+          m))
+
+(defn boolean? [v]
+  (instance? Boolean v))
+
 ; Wrap a function in a nil check, i.e. only execute function if value is not nil
 (defn maybe [f]
   (fn [value]

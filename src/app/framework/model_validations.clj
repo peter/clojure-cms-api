@@ -1,7 +1,7 @@
 (ns app.framework.model-validations
   (:require [clojure.string :as str]
             [app.util.core :as u]
-            [scjsv.core :as v]))
+            [app.util.schema :refer [validate-schema]]))
 
 (defn with-model-errors [doc errors]
   (let [new-meta (update-in (meta doc) [:errors] concat errors)]
@@ -20,5 +20,5 @@
   (assoc schema :properties
                 (u/map-values #(apply dissoc % custom-property-keys) (:properties schema))))
 
-(defn validate-schema [doc schema]
-  ((v/validator (without-custom-keys schema)) doc))
+(defn validate-model-schema [schema doc]
+  (validate-schema (without-custom-keys schema) doc))

@@ -28,7 +28,7 @@
               :before [:spec1]
             }
           }
-          :indexes [:spec1]
+          :indexes [{:fields [:spec1]}]
         }
         spec2 {
           :type "spec2"
@@ -43,7 +43,7 @@
               :before [:spec2]
             }
           }
-          :indexes [:spec2]
+          :indexes [{:fields [:spec2]}]
         }
         expect {
           :type "spec2"
@@ -59,6 +59,6 @@
               :before [:spec1 :spec2]
             }
           }
-          :indexes [:spec1 :spec2]
+          :indexes [{:fields [:spec1]} {:fields [:spec2]}]
         }]
   (model-spec/generate-spec spec1 spec2) => expect))

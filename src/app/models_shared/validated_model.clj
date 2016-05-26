@@ -1,8 +1,8 @@
 (ns app.models-shared.validated-model
-  (:require [app.framework.model-validations :refer [validate-schema with-model-errors]]))
+  (:require [app.framework.model-validations :refer [validate-model-schema with-model-errors]]))
 
 (defn validate-schema-callback [doc options]
-  (if-let [errors (validate-schema doc (:schema options))]
+  (if-let [errors (validate-model-schema (:schema options) doc)]
     (with-model-errors doc errors)
     doc))
 
