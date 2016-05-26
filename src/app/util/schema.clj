@@ -6,8 +6,8 @@
   (boolean (some #(% value) [string? keyword? number? u/boolean? nil? map? vector?])))
 
 ; Test with: {:foo [(fn []) :foobar] :bar {:baz (fn []) :bla :bla}}
-(defn json-friendly-map [m]
+(defn schema-friendly-map [m]
   (u/deep-map-values #(if (json-type? %) % (.toString %)) m))
 
 (defn validate-schema [schema doc]
-  ((v/validator schema) (json-friendly-map doc)))
+  ((v/validator schema) (schema-friendly-map doc)))

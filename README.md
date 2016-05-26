@@ -7,6 +7,8 @@ JSON schema validation, versioning, and changelog.
 
 * Add more models with associations
 
+* Unknown/unwritable attributes are silently ignored by crud API. This is not very user friendly
+
 * list endpoint
   * Default sort order id desc, support sort query parameter
   * query
@@ -17,6 +19,7 @@ JSON schema validation, versioning, and changelog.
    * which fields to include (cms needs more fields than www)
 
 * Associations/Relationships
+  * sort/limit/fields options for relationships?
   * Include/embed associated docs on API get. Comply with jsonapi.org JSON structure.
   * Validate id references before save
 
@@ -189,4 +192,45 @@ curl -i -X DELETE -H "Authorization: Bearer $TOKEN" http://localhost:5000/v1/pag
 ((v/validator model-spec/spec-schema) (u/json-friendly-map pages/spec))
 (pprint (u/json-friendly-map pages/spec))
 (pprint model-spec/spec-schema)
+```
+
+## Finding Relationships
+
+```
+(require '[app.system])
+(def system (app.system/-main :start-web false))
+(require '[app.framework.model-relationships :as r :reload-all true])
+
+(def to-many {:widgets {
+  :from_coll :pages
+  :from_field :widgets_ids
+  :to_coll :widgets
+  :to_field :id}})
+(def schema {
+  :type "object"
+  :properties {
+    :widgets_ids {:type "array"}
+  }
+})
+(pprint (r/find-relationship (:app system) {:type :pages :schema schema :relationships to-many} {:widgets_ids [1 2]} "widgets"))
+
+(def to-one {:widgets {
+  :from_coll :pages
+  :from_field :widgets_id
+  :to_coll :widgets
+  :to_field :id}})
+(def schema {
+  :type "object"
+  :properties {
+    :widgets_id {:type "integer"}
+  }
+})
+(pprint (r/find-relationship (:app system) {:type :pages :schema schema :relationships to-one} {:widgets_id 1} "widgets"))
+
+(def from-many {:versions {
+  :from_coll :pages_versions
+  :from_field :id
+  :to_coll :pages
+  :to_field :id}})
+(pprint (r/find-relationship-from-many (:app system) {:relationships from-many} {:id 1} "versions"))
 ```
