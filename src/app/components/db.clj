@@ -1,12 +1,12 @@
 (ns app.components.db
   (:refer-clojure :exclude [find update delete count])
-  (:require [monger.core :as mg]
+  (:require [app.util.db :refer [json-friendly mongo-friendly mongo-map]]
+            [monger.core :as mg]
             [monger.collection :as mc]
             [monger.query :as mq]
             [monger.joda-time]
             [com.stuartsierra.component :as component])
-  (:import [com.mongodb MongoOptions ServerAddress]
-           [org.bson.types ObjectId]))
+  (:import [org.bson.types ObjectId]))
 
 ; Mongo API doc: http://clojuremongodb.info/articles/getting_started.html
 
@@ -30,25 +30,6 @@
 
 (defn new-database [& args]
   (map->Database (apply hash-map args)))
-
-; --------------------------------------------------------
-; Utility functions
-; --------------------------------------------------------
-
-(defn- json-friendly [doc]
-  (let [friendly-id (.toString (:_id doc))]
-    (assoc doc :_id friendly-id)))
-
-(defn- mongo-friendly [doc]
-  (if (string? (:_id doc))
-    (assoc doc :_id (ObjectId. (:_id doc)))
-    doc))
-
-(defn mongo-map [fields]
-  (apply array-map (interleave fields (repeat 1))))
-
-(defn valid-object-id? [object-id]
-  (re-matches #"^[0-9a-fA-F]{24}$" object-id))
 
 ; --------------------------------------------------------
 ; Public Mongo API

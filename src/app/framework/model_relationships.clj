@@ -17,12 +17,12 @@
         from-field (get options :from_field default-from-field)
         to-coll (get options :to_coll relationship)
         to-field (get options :to_field :id)]
-    {
+    (merge options {
       :from_coll from-coll
       :from_field from-field
       :to_coll to-coll
       :to_field to-field
-    }))
+    })))
 
 (defn normalized-relationships [model-spec]
   (not-empty (reduce (fn [m [k v]] (assoc m k (relationship-options k model-spec))) {} (get model-spec :relationships {}))))
@@ -68,7 +68,7 @@
         field (:from_field opts)
         id ((:to_field opts) doc)
         query {field id}
-        find-opts {}
+        find-opts (:find_opts opts)
         docs (db/find (:database app) coll query find-opts)]
     docs))
 

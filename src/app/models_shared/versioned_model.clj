@@ -1,6 +1,7 @@
 (ns app.models-shared.versioned-model
   (:require [app.framework.model-support :as model-support]
             [app.framework.model-changes :refer [model-changes]]
+            [app.util.db :as db-util]
             [app.util.date :as d]
             [app.components.db :as db]))
 
@@ -27,7 +28,7 @@
     (merge model-attributes version-attributes)))
 
 (defn versioned-coll [model-spec]
-  (str (name (model-support/coll model-spec)) "_versions"))
+  (keyword (str (name (model-support/coll model-spec)) "_versions")))
 
 (defn set-version-callback [doc options]
   (assoc doc :version (latest-version (:model-spec options) doc)))
@@ -65,8 +66,22 @@
   {:fields [:id :version] :coll (versioned-coll {:type type}) :unique true}
 ])
 
-(defn versioned-spec [& {:keys [type]}] {
+(defn versioned-relationships [type id-attribute]
+  {
+    :versions {
+      :from_coll (versioned-coll {:type type})
+      :from_field id-attribute
+      :to_coll (model-support/coll {:type type})
+      :to_field id-attribute
+      :find_opts {
+        :per-page 20
+        :fields [:id :title :version :created_at :updated_by]
+      }
+  }})
+
+(defn versioned-spec [& {:keys [type id-attribute] :or {id-attribute :id}}] {
   :schema versioned-schema
   :callbacks versioned-callbacks
   :indexes (versioned-indexes type)
+  :relationships (versioned-relationships type id-attribute)
 })

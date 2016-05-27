@@ -62,6 +62,15 @@
             :from_field {:type "string"}
             :to_field {:type "string"}
             :to_coll {:type "string"}
+            :find_opts {
+              :type "object"
+              :properties {
+                :sort {:type "object"}
+                :per-page {:type "integer"}
+                :fields {:type "array"}
+              }
+              :additionalProperties false
+            }
           }
           :required [:from_coll :from_field :to_field :to_coll]
           :additionalProperties false

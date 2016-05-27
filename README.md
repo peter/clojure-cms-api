@@ -5,23 +5,25 @@ JSON schema validation, versioning, and changelog.
 
 ## TODO
 
-* Add more models with associations
+* Versioning
+  * get/list version query parameter (id|latest|published)
 
-* Unknown/unwritable attributes are silently ignored by crud API. This is not very user friendly
+* Make version param apply also to relationships
+
+* Associations/Relationships
+  * Validate id references before save
+  * sort/limit/fields options for relationships?
+
+* Add more models with associations
 
 * list endpoint
   * Default sort order id desc, support sort query parameter
   * query
 
-* get endpoint
-  * Include associated versions
-  * version query parameter (id|latest|published)
-   * which fields to include (cms needs more fields than www)
+* Refactor let/if and let/if-not in crud_api to if-let
 
-* Associations/Relationships
-  * sort/limit/fields options for relationships?
-  * Include/embed associated docs on API get. Comply with jsonapi.org JSON structure.
-  * Validate id references before save
+* get endpoint
+  * which fields to include (cms needs more fields than www)
 
 * Use Swagger: https://github.com/metosin/ring-swagger
 
