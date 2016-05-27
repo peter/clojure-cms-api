@@ -30,8 +30,8 @@
       :relationships relationships
     }))))
 
-(defn error-response [doc]
-  {:body {:errors (model-errors doc)} :status 422})
+(defn error-response [errors]
+  {:body {:errors errors} :status 422})
 
 (defn data-response
   ([data status] {:body {:data data} :status status})
@@ -43,8 +43,11 @@
 (defn missing-response []
   {:body {} :status 404})
 
+(defn invalid-attributes-response [invalids]
+  (error-response [{:type "invalid_attributes" :attributes invalids}]))
+
 (defn response [doc]
   (cond
     (= (model-errors doc) model-not-updated) (no-update-response doc)
-    (model-errors doc) (error-response doc)
+    (model-errors doc) (error-response (model-errors doc))
     :else (data-response doc)))
