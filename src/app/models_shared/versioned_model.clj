@@ -1,5 +1,5 @@
 (ns app.models-shared.versioned-model
-  (:require [app.framework.model-api :as model-api]
+  (:require [app.framework.model-support :as model-support]
             [app.framework.model-changes :refer [model-changes]]
             [app.util.date :as d]
             [app.components.db :as db]))
@@ -27,7 +27,7 @@
     (merge model-attributes version-attributes)))
 
 (defn versioned-coll [model-spec]
-  (str (name (model-api/coll model-spec)) "_versions"))
+  (str (name (model-support/coll model-spec)) "_versions"))
 
 (defn set-version-callback [doc options]
   (assoc doc :version (latest-version (:model-spec options) doc)))
@@ -38,7 +38,7 @@
   doc)
 
 (defn remove-version-callbacks [doc options]
-  (let [id-attribute (model-api/id-attribute (:model-spec options))
+  (let [id-attribute (model-support/id-attribute (:model-spec options))
         query (select-keys doc [id-attribute])
         result (db/delete (:database options) (versioned-coll doc) query)]
     doc))

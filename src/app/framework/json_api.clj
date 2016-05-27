@@ -1,5 +1,6 @@
 (ns app.framework.json-api
   (:require [app.util.core :as u]
+            [app.framework.model-support :as model-support]
             [app.framework.model-validations :refer [model-errors model-not-updated]]))
 
 ; Inspired by http://jsonapi.org
@@ -7,17 +8,27 @@
 (defn id [request]
   (get-in request [:params :id]))
 
-; TODO: query parameter validation - use json schema?
-(defn pagination [request]
-  (->> (select-keys (get-in request [:params]) [:page :per-page])
-       (u/map-values u/safe-parse-int)
-       (u/compact)))
-
-(defn list-opts [request]
-  (pagination request))
-
 (defn attributes [model-spec request]
   (get-in request [:params (:type model-spec)]))
+
+(defn with-attrs [model-spec doc]
+  (let [id ((model-support/id-attribute model-spec) doc)]
+    {
+      :id (str id)
+      :type (:type doc)
+      :attributes doc
+    }))
+
+(defn relationship-docs [model-spec docs]
+  {:data (map #(with-attrs model-spec %) docs)})
+
+(defn json-doc [model-spec doc]
+  (let [id ((model-support/id-attribute model-spec) doc)
+        relationships (not-empty (u/map-values (partial relationship-docs model-spec)
+                                               (or (:relationships (meta doc)) {})))]
+    (u/compact (merge (with-attrs model-spec doc) {
+      :relationships relationships
+    }))))
 
 (defn error-response [doc]
   {:body {:errors (model-errors doc)} :status 422})

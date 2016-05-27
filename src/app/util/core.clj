@@ -60,9 +60,14 @@
 (defn split-by-comma [value]
   (if (string? value) (str/split value #",") value))
 
-; Map function over values in a map, see: http://stackoverflow.com/questions/1676891/mapping-a-function-on-the-values-of-a-map-in-clojure
+; Replaces each value v in map with f(v)
+; http://stackoverflow.com/questions/1676891/mapping-a-function-on-the-values-of-a-map-in-clojure
 (defn map-values [f m]
   (reduce (fn [altered-map [k v]] (assoc altered-map k (f v))) {} m))
+
+; Replaces each value v in map with f(k) where k is the corresponding key
+(defn map-key-values [f m]
+  (reduce (fn [altered-map [k v]] (assoc altered-map k (f k))) {} m))
 
 (defn deep-map-values [f m]
   (reduce (fn [altered-map [k v]]

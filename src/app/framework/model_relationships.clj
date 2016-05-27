@@ -1,6 +1,7 @@
 (ns app.framework.model-relationships
-  (:require [app.framework.model-api :as model-api]
-            [app.components.db :as db]))
+  (:require [app.framework.model-support :as model-support]
+            [app.components.db :as db]
+            [app.util.core :as u]))
 
 (defn- id-field [relationship]
   (keyword (str (name relationship) "_id")))
@@ -10,7 +11,7 @@
 
 (defn relationship-options [relationship model-spec]
   (let [options (get-in model-spec [:relationships relationship])
-        from-coll (get options :from_coll (model-api/coll model-spec))
+        from-coll (get options :from_coll (model-support/coll model-spec))
         attribute-keys (set (keys (get-in model-spec [:schema :properties])))
         default-from-field (some attribute-keys [(id-field relationship) (ids-field relationship)])
         from-field (get options :from_field default-from-field)
@@ -73,15 +74,21 @@
 
 (defn find-relationship [app model-spec doc relationship]
   (let [opts (get-in model-spec [:relationships (keyword relationship)])
-        coll (model-api/coll model-spec)
+        coll (model-support/coll model-spec)
         from-field (:from_field opts)
         multiple? (= (get-in model-spec [:schema :properties from-field :type]) "array")
         find-fn (cond
                   (and (= coll (:from_coll opts)) multiple?) find-relationship-to-many
                   (and (= coll (:from_coll opts)) (not multiple?)) find-relationship-to-one
                   (= coll (:to_coll opts)) find-relationship-from-many)]
-    (println "pm debug find-relationships" find-fn (:from_coll opts) coll from-field multiple? (:to_coll opts))
     (find-fn app model-spec doc relationship)))
+
+(defn with-relationships [app model-spec doc]
+  (if (not-empty (:relationships model-spec))
+    (let [relationships (u/map-key-values (partial find-relationship app model-spec doc)
+                                          (:relationships model-spec))]
+      (with-meta doc (merge (meta doc) {:relationships relationships})))
+    doc))
 
 ; TODO: validate ids of has-one and has-many if from_coll = (coll model-spec)
 (defn validate-references-callback [doc options])

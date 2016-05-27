@@ -1,33 +1,12 @@
 (ns app.framework.model-api
   (:refer-clojure :exclude [find update delete count])
   (:require [app.components.db :as db]
+            [app.framework.model-support :refer [coll id-attribute id-query valid-id?]]
             [app.util.core :as u]
-            [app.framework.model-schema :refer [schema-attributes]]
+            [app.framework.model-relationships :refer [with-relationships]]
             [app.framework.model-validations :refer [with-model-errors model-not-updated]]
             [app.framework.model-changes :refer [model-changed?]]
             [app.framework.model-callbacks :refer [with-callbacks]]))
-
-(defn coll [spec]
-  (:type spec))
-
-(defn id-attribute [model-spec]
-  (let [attribute-keys (keys (schema-attributes (:schema model-spec)))]
-    (or (some #{:id} attribute-keys)
-        :_id)))
-
-(defn id-value [id]
-  (or (u/safe-parse-int id) id))
-
-(defn id-query [model-spec id]
-  (hash-map (id-attribute model-spec)
-            (id-value id)))
-
-(defn valid-id? [model-spec id]
-  (let [attribute (id-attribute model-spec)]
-    (cond
-      (= attribute :id) (u/valid-int? id)
-      (= attribute :_id) (db/valid-object-id? id)
-      :else true)))
 
 (defn find
   ([app model-spec query opts]
@@ -35,10 +14,16 @@
   ([app model-spec query]
     (find app model-spec query {})))
 
-(defn find-one [app model-spec id]
-  (if (valid-id? model-spec id)
-    (db/find-one (:database app) (coll model-spec) (id-query model-spec id))
-    nil))
+(defn find-one
+  ([app model-spec id opts]
+    (if (valid-id? model-spec id)
+      (let [doc (db/find-one (:database app) (coll model-spec) (id-query model-spec id))]
+        (if (:relationships opts)
+          (and doc (with-relationships app model-spec doc))
+          doc))
+      nil))
+  ([app model-spec id]
+    (find-one app model-spec id {})))
 
 (defn count [app model-spec query]
   (db/count (:database app) (coll model-spec) query))

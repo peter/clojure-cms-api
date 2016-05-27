@@ -1,10 +1,25 @@
 (ns app.framework.crud-api
   (:require [app.framework.model-api :as model-api]
+            [app.framework.model-support :as model-support]
             [app.framework.json-api :as json-api]
             [app.framework.model-attributes :refer [api-writable-attributes]]
             [app.framework.crud-api-audit :refer [updated-by created-by save-changelog]]
             [app.framework.crud-api-types :refer [coerce-attribute-types]]
-            [app.logger :as logger]))
+            [app.logger :as logger]
+            [app.util.core :as u]))
+
+; TODO: query parameter validation - use json schema
+(defn- pagination [request]
+  (->> (select-keys (get-in request [:params]) [:page :per-page])
+       (u/map-values u/safe-parse-int)
+       (u/compact)))
+
+(defn- list-opts [request]
+  (pagination request))
+
+; TODO: query parameter validation - use json schema
+(defn- get-opts [request]
+  (select-keys (:params request) [:relationships]))
 
 (defn- write-attributes [model-spec request]
   (-> (json-api/attributes model-spec request)
@@ -17,7 +32,7 @@
 
 (defn- update-attributes [model-spec request]
   (merge (write-attributes model-spec request)
-         (model-api/id-query model-spec (json-api/id request))
+         (model-support/id-query model-spec (json-api/id request))
          (updated-by request)))
 
 (defprotocol CrudApi
@@ -31,14 +46,14 @@
   CrudApi
 
   (list [this app request]
-    (let [opts (json-api/list-opts request)
+    (let [opts (list-opts request)
           docs (model-api/find app model-spec {} opts)]
       (json-api/response docs)))
 
   (get [this app request]
-    (let [doc (model-api/find-one app model-spec (json-api/id request))]
+    (let [doc (model-api/find-one app model-spec (json-api/id request) (get-opts request))]
       (if doc
-        (json-api/response doc)
+        (json-api/response (json-api/json-doc model-spec doc))
         (json-api/missing-response))))
 
   (create [this app request]
