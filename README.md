@@ -7,6 +7,7 @@ JSON schema validation, versioning, and changelog.
 
 * Versioning
   * get/list version query parameter (id|latest|published)
+  * Move versioned-model into framework
 
 * Make version param apply also to relationships
 

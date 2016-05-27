@@ -1,16 +1,10 @@
 (ns app.models-shared.versioned-model
   (:require [app.framework.model-support :as model-support]
             [app.framework.model-changes :refer [model-changes]]
+            [app.framework.model-versions :refer [versioned-attributes versioned-coll]]
             [app.util.db :as db-util]
             [app.util.date :as d]
             [app.components.db :as db]))
-
-(defn versioned-attribute? [attribute-schema]
-  (get attribute-schema :versioned true))
-
-(defn versioned-attributes [schema]
-  (filter #(versioned-attribute? (% (:properties schema)))
-          (keys (:properties schema))))
 
 (defn increment-version? [model-spec doc]
   (not-empty (select-keys (model-changes model-spec doc)
@@ -26,9 +20,6 @@
   (let [model-attributes (select-keys doc (versioned-attributes (:schema model-spec)))
         version-attributes {:created_at (d/now)}]
     (merge model-attributes version-attributes)))
-
-(defn versioned-coll [model-spec]
-  (keyword (str (name (model-support/coll model-spec)) "_versions")))
 
 (defn set-version-callback [doc options]
   (assoc doc :version (latest-version (:model-spec options) doc)))
@@ -75,7 +66,7 @@
       :to_field id-attribute
       :find_opts {
         :per-page 20
-        :fields [:id :title :version :created_at :updated_by]
+        :fields [:id :type :title :widgets_ids :version :created_at :updated_by]
       }
   }})
 

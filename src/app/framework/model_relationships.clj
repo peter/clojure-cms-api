@@ -39,7 +39,7 @@
         ids ((:from_field opts) doc)
         query {field {:$in ids}}
         find-opts {}
-        docs (db/find (:database app) coll query find-opts)]
+        docs (and (not-empty ids) (db/find (:database app) coll query find-opts))]
     docs))
 
 ; Example: (i.e. ActiveRecord belongs_to)
@@ -54,7 +54,7 @@
         id ((:from_field opts) doc)
         query {field id}
         find-opts {}
-        docs (db/find (:database app) coll query find-opts)]
+        docs (and id (db/find (:database app) coll query find-opts))]
     (first docs)))
 
 ; Example: (i.e. ActiveRecord has_many)
@@ -69,7 +69,7 @@
         id ((:to_field opts) doc)
         query {field id}
         find-opts (:find_opts opts)
-        docs (db/find (:database app) coll query find-opts)]
+        docs (and id (db/find (:database app) coll query find-opts))]
     docs))
 
 (defn find-relationship [app model-spec doc relationship]
@@ -84,7 +84,7 @@
     (find-fn app model-spec doc relationship)))
 
 (defn with-relationships [app model-spec doc]
-  (if (not-empty (:relationships model-spec))
+  (if (and doc (not-empty (:relationships model-spec)))
     (let [relationships (u/map-key-values (partial find-relationship app model-spec doc)
                                           (:relationships model-spec))]
       (with-meta doc (merge (meta doc) {:relationships relationships})))
