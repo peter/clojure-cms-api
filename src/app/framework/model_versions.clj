@@ -24,3 +24,8 @@
   (if published?
     (:published_version doc)
     (and version-param (u/safe-parse-int version-param))))
+
+(defn apply-version [model-spec doc versioned-doc]
+  (and versioned-doc (merge versioned-doc
+                            (select-keys doc
+                                         (unversioned-attributes (:schema model-spec))))))

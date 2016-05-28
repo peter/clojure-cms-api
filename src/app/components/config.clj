@@ -42,8 +42,8 @@
   component/Lifecycle
 
   (start [component]
-    (println "Starting Config")
     (let [config (get-config config)]
+      (println "Starting Config" config)
       (assoc component :config config)))
 
   (stop [component]
@@ -51,4 +51,4 @@
     (dissoc component :config)))
 
 (defn new-config [& args]
-  (map->Config (apply hash-map args)))
+  (map->Config {:config (apply hash-map args)}))

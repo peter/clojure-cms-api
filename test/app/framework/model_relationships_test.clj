@@ -1,8 +1,8 @@
 (ns app.framework.model-relationships-test
   (:use midje.sweet)
-  (:require [app.framework.model-relationships :refer [relationship-options]]))
+  (:require [app.framework.model-relationships :refer [relationship-spec]]))
 
-(fact "relationship-options: can default from_coll/from_field/to_coll/to_field for has-many"
+(fact "relationship-spec: can default from_coll/from_field/to_coll/to_field for has-many"
   (let [relationship :widgets
         model-spec {
           :type :pages
@@ -23,9 +23,9 @@
           :to_coll :widgets
           :to_field :id
         }]
-    (relationship-options relationship model-spec) => expected))
+    (relationship-spec relationship model-spec) => expected))
 
-(fact "relationship-options: can default from_coll/from_field/to_coll/to_field for has-one"
+(fact "relationship-spec: can default from_coll/from_field/to_coll/to_field for has-one"
   (let [relationship :widgets
         model-spec {
           :type :pages
@@ -46,9 +46,9 @@
           :to_coll :widgets
           :to_field :id
         }]
-    (relationship-options relationship model-spec) => expected))
+    (relationship-spec relationship model-spec) => expected))
 
-(fact "relationship-options: can specify from_coll/from_field/to_coll/to_field"
+(fact "relationship-spec: can specify from_coll/from_field/to_coll/to_field"
   (let [relationship :widgets
         options {
           :from_coll :foobar
@@ -70,4 +70,4 @@
           }
         }
         expected options]
-    (relationship-options relationship model-spec) => expected))
+    (relationship-spec relationship model-spec) => expected))

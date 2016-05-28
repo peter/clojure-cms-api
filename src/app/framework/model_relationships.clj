@@ -1,5 +1,7 @@
 (ns app.framework.model-relationships
   (:require [app.framework.model-support :as model-support]
+            [app.framework.model-reflect :as model-reflect]
+            [app.framework.model-versions :refer [apply-version]]
             [app.components.db :as db]
             [app.util.core :as u]))
 
@@ -9,7 +11,7 @@
 (defn- ids-field [relationship]
   (keyword (str (name relationship) "_ids")))
 
-(defn relationship-options [relationship model-spec]
+(defn relationship-spec [relationship model-spec]
   (let [options (get-in model-spec [:relationships relationship])
         from-coll (get options :from_coll (model-support/coll model-spec))
         attribute-keys (set (keys (get-in model-spec [:schema :properties])))
@@ -25,69 +27,91 @@
     })))
 
 (defn normalized-relationships [model-spec]
-  (not-empty (reduce (fn [m [k v]] (assoc m k (relationship-options k model-spec))) {} (get model-spec :relationships {}))))
+  (not-empty (reduce (fn [m [k v]] (assoc m k (relationship-spec k model-spec)))
+                     {}
+                     (get model-spec :relationships {}))))
+
+; TODO: this function is a draft/WIP!
+(defn- with-published-versions [app docs spec coll query opts]
+  (if (:published opts)
+    (let [docs (filter :published_version docs)
+          draft-docs (filter #(not= (:published_version %) (:version %)) docs)
+          version-ids (map #(hash-map :id (:id %) :version (:published_version %)) draft-docs)
+          versions-query {:$or version-ids}
+          versioned-coll (str (name coll) "_versions"); TODO!!!
+          version-spec (model-reflect/model-spec coll) ; TODO!!!
+          versions (db/find (:database app) versioned-coll versions-query (:find_opts spec))
+          versions-by-id (reduce #(assoc %1 (:id %2) %2) {} versions)
+          published-docs (map (fn [doc]
+                                (if-let [version (get versions-by-id (:id doc))]
+                                  (apply-version version-spec doc version)
+                                  doc))
+                              docs)]
+      published-docs)
+    docs))
 
 ; Example: (i.e. ActiveRecord has_and_belongs_to_many or has_many :through)
 ; from_coll pages
 ; from_field widgets_ids
 ; to_coll widgets
 ; to_field id
-(defn find-relationship-to-many [app model-spec doc relationship]
-  (let [opts (get-in model-spec [:relationships (keyword relationship)])
-        coll (:to_coll opts)
-        field (:to_field opts)
-        ids ((:from_field opts) doc)
+(defn find-relationship-to-many [app model-spec doc relationship opts]
+  (let [spec (get-in model-spec [:relationships (keyword relationship)])
+        coll (:to_coll spec)
+        field (:to_field spec)
+        ids ((:from_field spec) doc)
         query {field {:$in ids}}
-        find-opts {}
+        find-opts (:find_opts spec)
         docs (and (not-empty ids) (db/find (:database app) coll query find-opts))]
-    docs))
+    (with-published-versions app docs spec coll query opts)))
 
 ; Example: (i.e. ActiveRecord belongs_to)
 ; from_coll pages
 ; from_field widgets_id
 ; to_coll widgets
 ; to_field id
-(defn find-relationship-to-one [app model-spec doc relationship]
-  (let [opts (get-in model-spec [:relationships (keyword relationship)])
-        coll (:to_coll opts)
-        field (:to_field opts)
-        id ((:from_field opts) doc)
+(defn find-relationship-to-one [app model-spec doc relationship opts]
+  (let [spec (get-in model-spec [:relationships (keyword relationship)])
+        coll (:to_coll spec)
+        field (:to_field spec)
+        id ((:from_field spec) doc)
         query {field id}
-        find-opts {}
+        find-opts (:find_opts spec)
         docs (and id (db/find (:database app) coll query find-opts))]
-    (first docs)))
+    (first (with-published-versions app docs spec coll query opts))))
 
 ; Example: (i.e. ActiveRecord has_many)
 ; from_coll pages_versions
 ; from_field id
 ; to_coll pages
 ; to_field id
-(defn find-relationship-from-many [app model-spec doc relationship]
-  (let [opts (get-in model-spec [:relationships (keyword relationship)])
-        coll (:from_coll opts)
-        field (:from_field opts)
-        id ((:to_field opts) doc)
+(defn find-relationship-from-many [app model-spec doc relationship opts]
+  (let [spec (get-in model-spec [:relationships (keyword relationship)])
+        coll (:from_coll spec)
+        field (:from_field spec)
+        id ((:to_field spec) doc)
         query {field id}
-        find-opts (:find_opts opts)
+        find-opts (:find_opts spec)
         docs (and id (db/find (:database app) coll query find-opts))]
-    docs))
+    (with-published-versions app docs spec coll query opts)))
 
-(defn find-relationship [app model-spec doc relationship]
-  (let [opts (get-in model-spec [:relationships (keyword relationship)])
+(defn find-relationship [app model-spec doc relationship opts]
+  (let [spec (get-in model-spec [:relationships (keyword relationship)])
         coll (model-support/coll model-spec)
-        from-field (:from_field opts)
+        from-field (:from_field spec)
         multiple? (= (get-in model-spec [:schema :properties from-field :type]) "array")
         find-fn (cond
-                  (and (= coll (:from_coll opts)) multiple?) find-relationship-to-many
-                  (and (= coll (:from_coll opts)) (not multiple?)) find-relationship-to-one
-                  (= coll (:to_coll opts)) find-relationship-from-many)]
-    (find-fn app model-spec doc relationship)))
+                  (and (= coll (:from_coll spec)) multiple?) find-relationship-to-many
+                  (and (= coll (:from_coll spec)) (not multiple?)) find-relationship-to-one
+                  (= coll (:to_coll spec)) find-relationship-from-many)]
+    (find-fn app model-spec doc relationship opts)))
 
-(defn with-relationships [app model-spec doc relationships? published?]
-  (if (and doc (not-empty (:relationships model-spec)) relationships?)
-    (let [spec (if published? (dissoc (:relationships model-spec) :versions) (:relationships model-spec))
-          relationships (u/map-key-values (partial find-relationship app model-spec doc)
-                                          spec)]
+(defn with-relationships [app model-spec doc opts]
+  (if (and doc (not-empty (:relationships model-spec)) (:relationships opts))
+    (let [spec (if (:published opts) (dissoc (:relationships model-spec) :versions)
+                                      (:relationships model-spec))
+          relationships (u/compact (u/map-key-values #(find-relationship app model-spec doc % opts)
+                                                     spec))]
       (with-meta doc (merge (meta doc) {:relationships relationships})))
     doc))
 

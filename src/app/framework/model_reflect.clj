@@ -16,6 +16,6 @@
         (u/compact))))
 
 (defn model-spec [model-name]
-  (let [spec-path (str "app.models." model-name "/" spec-var-name)
+  (let [spec-path (str "app.models." (name model-name) "/" spec-var-name)
         spec-var (u/load-var spec-path)]
     (and spec-var @spec-var)))

@@ -5,15 +5,17 @@ JSON schema validation, versioning, and changelog.
 
 ## TODO
 
+* Associations/Relationships
+  * Should be between models instead of between colls
+  * Only filter out published versions of associated models if that model is published/versioned
+  * Validate id references before save (also needed for published_version)
+  * sort/limit/fields options for relationships?
+
 * Versioning
   * get/list version query parameter (id|latest|published)
   * Move versioned-model into framework
 
 * Make version param apply also to relationships
-
-* Associations/Relationships
-  * Validate id references before save (also needed for published_version)
-  * sort/limit/fields options for relationships?
 
 * Add more models with associations
 
@@ -215,7 +217,7 @@ curl -i -X DELETE -H "Authorization: Bearer $TOKEN" http://localhost:5000/v1/pag
     :widgets_ids {:type "array"}
   }
 })
-(pprint (r/find-relationship (:app system) {:type :pages :schema schema :relationships to-many} {:widgets_ids [1 2]} "widgets"))
+(pprint (r/find-relationship (:app system) {:type :pages :schema schema :relationships to-many} {:widgets_ids [1 2]} "widgets" {}))
 
 (def to-one {:widgets {
   :from_coll :pages
@@ -228,12 +230,12 @@ curl -i -X DELETE -H "Authorization: Bearer $TOKEN" http://localhost:5000/v1/pag
     :widgets_id {:type "integer"}
   }
 })
-(pprint (r/find-relationship (:app system) {:type :pages :schema schema :relationships to-one} {:widgets_id 1} "widgets"))
+(pprint (r/find-relationship (:app system) {:type :pages :schema schema :relationships to-one} {:widgets_id 1} "widgets" {}))
 
 (def from-many {:versions {
   :from_coll :pages_versions
   :from_field :id
   :to_coll :pages
   :to_field :id}})
-(pprint (r/find-relationship-from-many (:app system) {:relationships from-many} {:id 1} "versions"))
+(pprint (r/find-relationship-from-many (:app system) {:relationships from-many} {:id 1} "versions" {}))
 ```

@@ -3,7 +3,8 @@
   (:require [app.components.db :as db]
             [app.framework.model-versions :refer [select-version]]
             [app.framework.model-support :refer [coll id-attribute id-query valid-id?]]
-            [app.framework.model-versions :refer [unversioned-attributes versioned-coll versioned-id-query]]
+            [app.framework.model-versions :refer [unversioned-attributes versioned-coll
+                                                  versioned-id-query apply-version]]
             [app.util.core :as u]
             [app.framework.model-relationships :refer [with-relationships]]
             [app.framework.model-validations :refer [with-model-errors model-not-updated]]
@@ -21,17 +22,15 @@
     (if (valid-id? model-spec id)
       (let [doc (db/find-one (:database app) (coll model-spec) (id-query model-spec id))
             published? (:published opts)
-            relationships? (:relationships opts)
+            relationships-opts (select-keys opts [:published :relationships])
             version (select-version doc (:version opts) published?)]
         (if (and version (not= version (:version doc)))
           (let [versioned-doc (db/find-one (:database app) (versioned-coll model-spec) (versioned-id-query model-spec id version))
-                doc (and versioned-doc (merge versioned-doc
-                                              (select-keys doc
-                                                           (unversioned-attributes (:schema model-spec)))))]
-                (with-relationships app model-spec doc relationships? published?))
+                doc (apply-version model-spec doc versioned-doc)]
+                (with-relationships app model-spec doc relationships-opts))
           (if (and published? (not (:published_version doc)))
               nil
-              (with-relationships app model-spec doc relationships? published?))))
+              (with-relationships app model-spec doc relationships-opts))))
       nil))
   ([app model-spec id]
     (find-one app model-spec id {})))
