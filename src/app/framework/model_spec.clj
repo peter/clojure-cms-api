@@ -59,9 +59,11 @@
           :type "object"
           :properties {
             :from_coll {:type "string"}
+            :from_model {:type ["null", "string"]}
             :from_field {:type "string"}
             :to_field {:type "string"}
             :to_coll {:type "string"}
+            :to_model {:type ["null", "string"]}
             :find_opts {
               :type "object"
               :properties {

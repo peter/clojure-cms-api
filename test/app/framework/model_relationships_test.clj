@@ -19,8 +19,10 @@
         }
         expected {
           :from_coll :pages
+          :from_model :pages
           :from_field :widgets_ids
           :to_coll :widgets
+          :to_model :widgets
           :to_field :id
         }]
     (relationship-spec relationship model-spec) => expected))
@@ -42,8 +44,10 @@
         }
         expected {
           :from_coll :pages
+          :from_model :pages
           :from_field :widgets_id
           :to_coll :widgets
+          :to_model :widgets
           :to_field :id
         }]
     (relationship-spec relationship model-spec) => expected))
@@ -52,8 +56,10 @@
   (let [relationship :widgets
         options {
           :from_coll :foobar
+          :from_model nil
           :from_field :foobar_ids
           :to_coll :foo
+          :to_model nil
           :to_field :bar
         }
         model-spec {

@@ -4,8 +4,8 @@
             [app.components.db :as db]
             [app.framework.model-schema :refer [schema-attributes]]))
 
-(defn coll [spec]
-  (:type spec))
+(defn coll [model-spec]
+  (:type model-spec))
 
 (defn id-attribute [model-spec]
   (let [attribute-keys (keys (schema-attributes (:schema model-spec)))]

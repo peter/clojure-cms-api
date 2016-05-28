@@ -11,6 +11,8 @@ JSON schema validation, versioning, and changelog.
   * Validate id references before save (also needed for published_version)
   * sort/limit/fields options for relationships?
 
+* Put all model specs in the app object. Memoize model-spec lookup
+
 * Versioning
   * get/list version query parameter (id|latest|published)
   * Move versioned-model into framework

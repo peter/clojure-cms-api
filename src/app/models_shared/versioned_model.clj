@@ -61,8 +61,10 @@
   {
     :versions {
       :from_coll (versioned-coll {:type type})
+      :from_model type
       :from_field id-attribute
       :to_coll (model-support/coll {:type type})
+      :to_model nil
       :to_field id-attribute
       :find_opts {
         :per-page 20

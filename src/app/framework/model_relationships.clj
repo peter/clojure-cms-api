@@ -1,7 +1,7 @@
 (ns app.framework.model-relationships
   (:require [app.framework.model-support :as model-support]
             [app.framework.model-reflect :as model-reflect]
-            [app.framework.model-versions :refer [apply-version]]
+            [app.framework.model-versions :refer [apply-version versioned-coll published-model?]]
             [app.components.db :as db]
             [app.util.core :as u]))
 
@@ -13,15 +13,19 @@
 
 (defn relationship-spec [relationship model-spec]
   (let [options (get-in model-spec [:relationships relationship])
-        from-coll (get options :from_coll (model-support/coll model-spec))
+        from-model (get options :from_model (:type model-spec))
+        from-coll (get options :from_coll (:type model-spec))
         attribute-keys (set (keys (get-in model-spec [:schema :properties])))
         default-from-field (some attribute-keys [(id-field relationship) (ids-field relationship)])
         from-field (get options :from_field default-from-field)
+        to-model (get options :to_model relationship)
         to-coll (get options :to_coll relationship)
         to-field (get options :to_field :id)]
     (merge options {
+      :from_model from-model
       :from_coll from-coll
       :from_field from-field
+      :to_model to-model
       :to_coll to-coll
       :to_field to-field
     })))
@@ -31,20 +35,19 @@
                      {}
                      (get model-spec :relationships {}))))
 
-; TODO: this function is a draft/WIP!
-(defn- with-published-versions [app docs spec coll query opts]
-  (if (:published opts)
+(defn- with-published-versions [app docs spec model query opts]
+  (if (and (:published opts) (published-model? model))
     (let [docs (filter :published_version docs)
           draft-docs (filter #(not= (:published_version %) (:version %)) docs)
           version-ids (map #(hash-map :id (:id %) :version (:published_version %)) draft-docs)
           versions-query {:$or version-ids}
-          versioned-coll (str (name coll) "_versions"); TODO!!!
-          version-spec (model-reflect/model-spec coll) ; TODO!!!
-          versions (db/find (:database app) versioned-coll versions-query (:find_opts spec))
+          versions-spec (model-reflect/model-spec model)
+          versions-coll (versioned-coll versions-spec)
+          versions (db/find (:database app) versions-coll versions-query (:find_opts spec))
           versions-by-id (reduce #(assoc %1 (:id %2) %2) {} versions)
           published-docs (map (fn [doc]
                                 (if-let [version (get versions-by-id (:id doc))]
-                                  (apply-version version-spec doc version)
+                                  (apply-version versions-spec doc version)
                                   doc))
                               docs)]
       published-docs)
@@ -58,12 +61,13 @@
 (defn find-relationship-to-many [app model-spec doc relationship opts]
   (let [spec (get-in model-spec [:relationships (keyword relationship)])
         coll (:to_coll spec)
+        model (:to_model spec)
         field (:to_field spec)
         ids ((:from_field spec) doc)
         query {field {:$in ids}}
         find-opts (:find_opts spec)
         docs (and (not-empty ids) (db/find (:database app) coll query find-opts))]
-    (with-published-versions app docs spec coll query opts)))
+    (with-published-versions app docs spec model query opts)))
 
 ; Example: (i.e. ActiveRecord belongs_to)
 ; from_coll pages
@@ -73,12 +77,13 @@
 (defn find-relationship-to-one [app model-spec doc relationship opts]
   (let [spec (get-in model-spec [:relationships (keyword relationship)])
         coll (:to_coll spec)
+        model (:to_model spec)
         field (:to_field spec)
         id ((:from_field spec) doc)
         query {field id}
         find-opts (:find_opts spec)
         docs (and id (db/find (:database app) coll query find-opts))]
-    (first (with-published-versions app docs spec coll query opts))))
+    (first (with-published-versions app docs spec model query opts))))
 
 ; Example: (i.e. ActiveRecord has_many)
 ; from_coll pages_versions
@@ -88,12 +93,13 @@
 (defn find-relationship-from-many [app model-spec doc relationship opts]
   (let [spec (get-in model-spec [:relationships (keyword relationship)])
         coll (:from_coll spec)
+        model (:from_model spec)
         field (:from_field spec)
         id ((:to_field spec) doc)
         query {field id}
         find-opts (:find_opts spec)
         docs (and id (db/find (:database app) coll query find-opts))]
-    (with-published-versions app docs spec coll query opts)))
+    (with-published-versions app docs spec model query opts)))
 
 (defn find-relationship [app model-spec doc relationship opts]
   (let [spec (get-in model-spec [:relationships (keyword relationship)])

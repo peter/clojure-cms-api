@@ -1,5 +1,6 @@
 (ns app.framework.model-versions
   (:require [app.util.core :as u]
+            [app.framework.model-reflect :as model-reflect]
             [app.framework.model-support :as model-support]))
 
 (defn versioned-attribute? [attribute-schema]
@@ -29,3 +30,6 @@
   (and versioned-doc (merge versioned-doc
                             (select-keys doc
                                          (unversioned-attributes (:schema model-spec))))))
+
+(defn published-model? [model]
+  (and model (get-in (model-reflect/model-spec model) [:schema :properties :published_version])))
