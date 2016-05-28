@@ -20,7 +20,7 @@
   (merge (model-support/id-query model-spec id)
          {:version version}))
 
-(defn parse-version-id [doc version-param]
-  (if (= version-param "published")
-      (:published_version doc)
-      (and version-param (u/safe-parse-int version-param))))
+(defn select-version [doc version-param published?]
+  (if published?
+    (:published_version doc)
+    (and version-param (u/safe-parse-int version-param))))

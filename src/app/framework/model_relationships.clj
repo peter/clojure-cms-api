@@ -83,10 +83,11 @@
                   (= coll (:to_coll opts)) find-relationship-from-many)]
     (find-fn app model-spec doc relationship)))
 
-(defn with-relationships [app model-spec doc]
-  (if (and doc (not-empty (:relationships model-spec)))
-    (let [relationships (u/map-key-values (partial find-relationship app model-spec doc)
-                                          (:relationships model-spec))]
+(defn with-relationships [app model-spec doc relationships? published?]
+  (if (and doc (not-empty (:relationships model-spec)) relationships?)
+    (let [spec (if published? (dissoc (:relationships model-spec) :versions) (:relationships model-spec))
+          relationships (u/map-key-values (partial find-relationship app model-spec doc)
+                                          spec)]
       (with-meta doc (merge (meta doc) {:relationships relationships})))
     doc))
 

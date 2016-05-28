@@ -12,7 +12,7 @@ JSON schema validation, versioning, and changelog.
 * Make version param apply also to relationships
 
 * Associations/Relationships
-  * Validate id references before save
+  * Validate id references before save (also needed for published_version)
   * sort/limit/fields options for relationships?
 
 * Add more models with associations

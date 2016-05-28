@@ -1,7 +1,7 @@
 (ns app.framework.model-api
   (:refer-clojure :exclude [find update delete count])
   (:require [app.components.db :as db]
-            [app.framework.model-versions :refer [parse-version-id]]
+            [app.framework.model-versions :refer [select-version]]
             [app.framework.model-support :refer [coll id-attribute id-query valid-id?]]
             [app.framework.model-versions :refer [unversioned-attributes versioned-coll versioned-id-query]]
             [app.util.core :as u]
@@ -20,13 +20,18 @@
   ([app model-spec id opts]
     (if (valid-id? model-spec id)
       (let [doc (db/find-one (:database app) (coll model-spec) (id-query model-spec id))
-            version (parse-version-id doc (:version opts))]
+            published? (:published opts)
+            relationships? (:relationships opts)
+            version (select-version doc (:version opts) published?)]
         (if (and version (not= version (:version doc)))
           (let [versioned-doc (db/find-one (:database app) (versioned-coll model-spec) (versioned-id-query model-spec id version))
-                doc (merge versioned-doc
-                           (select-keys doc (unversioned-attributes (:schema model-spec))))]
-                (with-relationships app model-spec doc))
-          (with-relationships app model-spec doc)))
+                doc (and versioned-doc (merge versioned-doc
+                                              (select-keys doc
+                                                           (unversioned-attributes (:schema model-spec)))))]
+                (with-relationships app model-spec doc relationships? published?))
+          (if (and published? (not (:published_version doc)))
+              nil
+              (with-relationships app model-spec doc relationships? published?))))
       nil))
   ([app model-spec id]
     (find-one app model-spec id {})))
