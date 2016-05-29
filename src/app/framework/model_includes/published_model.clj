@@ -1,5 +1,5 @@
-(ns app.models-shared.published-model
-  (:require [app.models-shared.versioned-model :refer [latest-version]]))
+(ns app.framework.model-includes.published-model
+  (:require [app.framework.model-includes.versioned-model :refer [latest-version]]))
 
 (defn adjust-published-version
   "Make sure published version is not greater than latest version"

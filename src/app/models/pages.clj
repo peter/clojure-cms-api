@@ -1,6 +1,6 @@
 (ns app.models.pages
   (:require [app.framework.model-spec :refer [generate-spec]]
-            [app.models-shared.content-base-model :refer [content-base-spec]]))
+            [app.framework.model-includes.content-base-model :refer [content-base-spec]]))
 
 (def model-type :pages)
 

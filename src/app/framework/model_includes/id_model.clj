@@ -1,4 +1,4 @@
-(ns app.models-shared.id-model
+(ns app.framework.model-includes.id-model
   (:require [app.framework.model-api :as model-api]))
 
 (defn- next-id [app model-spec]

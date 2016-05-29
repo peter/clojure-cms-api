@@ -1,4 +1,4 @@
-(ns app.models-shared.versioned-model
+(ns app.framework.model-includes.versioned-model
   (:require [app.framework.model-support :as model-support]
             [app.framework.model-changes :refer [model-changes]]
             [app.framework.model-versions :refer [versioned-attributes versioned-coll]]

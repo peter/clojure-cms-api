@@ -1,4 +1,4 @@
-(ns app.models-shared.audited-model
+(ns app.framework.model-includes.audited-model
   (:require [app.util.date :as d]))
 
 (defn audit-create-callback [doc options]

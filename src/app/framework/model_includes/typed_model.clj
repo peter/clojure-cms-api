@@ -1,4 +1,4 @@
-(ns app.models-shared.typed-model)
+(ns app.framework.model-includes.typed-model)
 
 (defn type-callback [doc options]
   (let [type (get-in options [:model-spec :type])]
