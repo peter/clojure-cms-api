@@ -1,5 +1,5 @@
 (ns app.router.core
-  (:require [app.logger :as logger]
+  (:require [app.framework.logger :as logger]
             [app.util.resource :as resource]
             [app.router.match :as m]))
 

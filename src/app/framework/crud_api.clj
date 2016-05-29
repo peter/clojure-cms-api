@@ -4,7 +4,7 @@
             [app.framework.crud-api-opts :refer [list-opts get-opts]]
             [app.framework.crud-api-attributes :refer [invalid-attributes create-attributes update-attributes]]
             [app.framework.crud-api-audit :refer [save-changelog]]
-            [app.logger :as logger]
+            [app.framework.logger :as logger]
             [app.util.core :as u]))
 
 (defprotocol CrudApi

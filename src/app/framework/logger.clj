@@ -1,4 +1,4 @@
-(ns app.logger
+(ns app.framework.logger
   (:require [clojure.string :as str]))
 
 (defn level [app]
