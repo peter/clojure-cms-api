@@ -2,7 +2,7 @@
 
 This is a starter kit (template) that forms the foundation for a CMS REST API based on
 Mongodb/Clojure. Features include token based user authentication,
-JSON schema validation, versioning, relationships, changelog, and a model API with
+JSON schema validation, versioning, publishing, relationships, changelog, and a model API with
 before/after callbacks on create/update/delete operations.
 
 The history of this app is that it is a re-implementation and simplification of the
@@ -132,7 +132,141 @@ curl -i -X PUT -H 'Content-Type: application/json' -H "Authorization: Bearer $TO
 curl -i -X DELETE -H "Authorization: Bearer $TOKEN" http://localhost:5000/v1/pages/1
 ```
 
-TODO: continue with examples for versioning and relationships.
+Now, let's look at versioning, associations, and publishing. Create two widgets and a page:
+
+```bash
+curl -i -X POST -H 'Content-Type: application/json' -H "Authorization: Bearer $TOKEN" -d '{"widgets": {"title": "Latest Movies", "published_version": 1}}' http://localhost:5000/v1/widgets
+
+curl -i -X POST -H 'Content-Type: application/json' -H "Authorization: Bearer $TOKEN" -d '{"widgets": {"title": "Latest Series"}}' http://localhost:5000/v1/widgets
+
+curl -i -X POST -H 'Content-Type: application/json' -H "Authorization: Bearer $TOKEN" -d '{"pages": {"title": "Start Page", "widgets_ids": [1, 2], "published_version": 1}}' http://localhost:5000/v1/pages
+```
+
+The first widget and the page are published since the `published_version` is set but the second widget is not. Now we can fetch the page with its associations:
+
+```bash
+curl -i http://localhost:5000/v1/pages/1?relationships=1
+```
+
+The response looks something like:
+
+```json
+{
+  "data" : {
+    "id" : "1",
+    "type" : "pages",
+    "attributes" : {
+      "version" : 1,
+      "created_at" : "2016-05-30T10:31:38.870+02:00",
+      "type" : "pages",
+      "id" : 1,
+      "created_by" : "admin@example.com",
+      "widgets_ids" : [ 1, 2 ],
+      "title" : "Start Page",
+      "published_version" : 1,
+      "_id" : "574bfa6a64fd1debd081d5b0"
+    },
+    "relationships" : {
+      "versions" : {
+        "data" : [ {
+          "id" : "1",
+          "type" : "pages",
+          "attributes" : {
+            "created_at" : "2016-05-30T10:31:38.880+02:00",
+            "version" : 1,
+            "widgets_ids" : [ 1, 2 ],
+            "id" : 1,
+            "title" : "Start Page",
+            "type" : "pages",
+            "_id" : "574bfa6a64fd1debd081d5b1"
+          }
+        } ]
+      },
+      "widgets" : {
+        "data" : [ {
+          "id" : "1",
+          "type" : "widgets",
+          "attributes" : {
+            "version" : 1,
+            "created_at" : "2016-05-30T10:30:42.230+02:00",
+            "type" : "widgets",
+            "id" : 1,
+            "created_by" : "admin@example.com",
+            "title" : "Latest Movies",
+            "published_version" : 1,
+            "_id" : "574bfa3264fd1debd081d5aa"
+          }
+        }, {
+          "id" : "2",
+          "type" : "widgets",
+          "attributes" : {
+            "version" : 1,
+            "created_at" : "2016-05-30T10:30:48.941+02:00",
+            "type" : "widgets",
+            "id" : 2,
+            "created_by" : "admin@example.com",
+            "title" : "Latest Series",
+            "_id" : "574bfa3864fd1debd081d5ad"
+          }
+        } ]
+      }
+    }
+  }
+}
+```
+
+Notice how the page has a single version and how it is associated with two widgets, only the first of which has a published version.
+Now, if we ask for the published version of the page (relevant to the end-user/public facing website) we don't get the version history
+and we only get the first widget:
+
+```bash
+curl -i 'http://localhost:5000/v1/pages/1?relationships=1&published=1'
+```
+
+If the page hadn't been published we would have gotten a 404.
+
+In addition to the version history there is a `changelog` collection in Mongodb with a log of all write operations performed via the API.
+Here is an example entry from the update above:
+
+```json
+{
+  "_id": "574bf1d564fd1debd081d5a8",
+  "action": "update",
+  "errors": null,
+  "doc": {
+    "_id": "574bf1bd64fd1debd081d5a4",
+    "type": "pages",
+    "title": "foo EDIT",
+    "updated_at": "2016-05-30T07:55:01.728Z",
+    "id": 1,
+    "updated_by": "admin@example.com",
+    "version": 2,
+    "body": "bar",
+    "created_by": "admin@example.com",
+    "created_at": "2016-05-30T07:54:37.087Z"
+  },
+  "changes": {
+    "title": {
+      "from": "foo",
+      "to": "foo EDIT"
+    },
+    "updated_at": {
+      "from": null,
+      "to": "2016-05-30T07:55:01.728Z"
+    },
+    "updated_by": {
+      "from": null,
+      "to": "admin@example.com"
+    },
+    "version": {
+      "from": 1,
+      "to": 2
+    }
+  },
+  "created_by": "admin@example.com",
+  "created_at": "2016-05-30T07:55:01.748Z"
+}
+```
 
 ## Starting the Server
 

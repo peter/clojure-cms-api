@@ -43,7 +43,7 @@
           versions-query {:$or version-ids}
           versions-spec (model-reflect/model-spec model)
           versions-coll (versioned-coll versions-spec)
-          versions (db/find (:database app) versions-coll versions-query (:find_opts spec))
+          versions (if (not-empty version-ids) (db/find (:database app) versions-coll versions-query (:find_opts spec) []))
           versions-by-id (reduce #(assoc %1 (:id %2) %2) {} versions)
           published-docs (map (fn [doc]
                                 (if-let [version (get versions-by-id (:id doc))]
