@@ -25,14 +25,15 @@
 
 (def lookup-handler (memoize lookup-handler-uncached))
 
-(defn- crud-routes [model]
-  [
-    {:methods #{:get} :path (str "/v1/" model) :handler (str model "/api:list")}
-    {:methods #{:get} :path (str "/v1/" model "/:id") :handler (str model "/api:get")}
-    {:methods #{:post} :path (str "/v1/" model) :handler (str model "/api:create")}
-    {:methods #{:patch :put} :path (str "/v1/" model "/:id") :handler (str model "/api:update")}
-    {:methods #{:delete} :path (str "/v1/" model "/:id") :handler (str model "/api:delete")}
-  ])
+(defn- crud-routes [model & {:keys [actions]
+                             :or {actions [:list :get :create :update :delete]}}]
+  (vals (select-keys {
+    :list {:methods #{:get} :path (str "/v1/" model) :handler (str model "/api:list")}
+    :get {:methods #{:get} :path (str "/v1/" model "/:id") :handler (str model "/api:get")}
+    :create {:methods #{:post} :path (str "/v1/" model) :handler (str model "/api:create")}
+    :update {:methods #{:patch :put} :path (str "/v1/" model "/:id") :handler (str model "/api:update")}
+    :delete {:methods #{:delete} :path (str "/v1/" model "/:id") :handler (str model "/api:delete")}
+  } actions)))
 
 (defn routes []
   (flatten [
