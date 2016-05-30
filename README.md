@@ -5,7 +5,7 @@ Mongodb/Clojure. Features include token based user authentication,
 JSON schema validation, versioning, relationships, changelog, and a model API with
 before/after callbacks on create/update/delete operations.
 
-The origin of this app is that it is a re-implementation and simplification of the
+The history of this app is that it is a re-implementation and simplification of the
 Node.js/Mongodb CMS that we built to power the Swedish recipe website [köket.se](http://www.koket.se)
 in 2015.
 
@@ -13,7 +13,7 @@ in 2015.
 
 First make sure you have [Leiningen/Clojure](http://leiningen.org) and Mongodb installed.
 
-First create an admin user:
+Create an admin user:
 
 ```
 lein repl
@@ -25,7 +25,7 @@ exit
 ```
 
 Check out the [pages](src/app/models/pages.clj) and [widgets](src/app/models/widgets.clj)
-models that we will be working with. Here is what the pages model specification might look like:
+models that we will be working with. Here is the essence of the pages model:
 
 ```clojure
 (def model-type :pages)
@@ -58,11 +58,11 @@ models that we will be working with. Here is what the pages model specification 
 }))
 ```
 
-The `type` corresponds to the Mongodb collection name. The schema is a JSON schema
-that is used to validate documents that we save to the database. Any relationships
+The `type` property corresponds to a Mongodb collection name. The schema is a JSON schema
+that is used to validate documents before they are saved to the database. Any relationships
 are configured separately and the `widgets` relationship corresponds to the `widgets_ids`
 property with is an array of id references to the `widgets` collection. The
-`indexes` section is a list of indexes that should be created in Mongodb for the collection.
+`indexes` section is a list of indexes that should be created in Mongodb.
 
 The `pages` model inherits from the `content-base-spec` that provides the following
 features:
@@ -78,7 +78,7 @@ features:
 ])
 ```
 
-Models specifications may also contain a `callbacks` property with before/after
+Model specifications may also contain a `callbacks` property with before/after
 callbacks for create/update/delete operations. As an illusatration, here are
 the callbacks used by `audited-spec`:
 
@@ -99,8 +99,8 @@ the callbacks used by `audited-spec`:
 })
 ```
 
-What the `id-spec` does is add a numeric sequential `id` field to models that
-we can use instead of the default Mongodb `_id` field which is a 24 character hex value.
+What the `id-spec` does is add a numeric sequential `id` that
+we can use instead of the default Mongodb `_id` field (which is a 24 character hexadecimal).
 
 Now, if you haven't already done so, start up the API in a different terminal with `lein run`.
 
