@@ -13,6 +13,13 @@ in 2015.
 
 First make sure you have [Leiningen/Clojure](http://leiningen.org) and Mongodb installed.
 
+Get the source:
+
+```bash
+git clone git@github.com:peter/clojure-cms-api.git
+cd clojure-cms-api
+```
+
 Create an admin user:
 
 ```
@@ -300,6 +307,8 @@ lein repl
   * support query?
 
 * Use Swagger: https://github.com/metosin/ring-swagger
+
+* Add first_published_at to published-model
 
 * finish API tests (under api-test)
 
