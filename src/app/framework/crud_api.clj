@@ -31,7 +31,8 @@
   (create [this app request]
     (let [invalids (invalid-attributes model-spec request)]
       (if-not invalids
-        (let [attributes (create-attributes model-spec request)
+        (let [attributes (->> (json-api/attributes model-spec request)
+                              (create-attributes model-spec request))
               doc (model-api/create app model-spec attributes)]
           (logger/debug app "crud-api create " (:type model-spec) " doc:" doc " meta:" (meta doc))
           (save-changelog (:database app) request model-spec :create doc)
@@ -43,7 +44,8 @@
       (if-not invalids
         (let [existing-doc (model-api/find-one app model-spec (json-api/id request))]
           (if existing-doc
-            (let [attributes (update-attributes model-spec request)
+            (let [attributes (->> (json-api/attributes model-spec request)
+                                  (update-attributes model-spec request))
                   doc (model-api/update app model-spec attributes)]
               (logger/debug app "crud-api update " (:type model-spec) " doc:" doc " meta:" (meta doc))
               (save-changelog (:database app) request model-spec :update doc)

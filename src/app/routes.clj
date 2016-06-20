@@ -41,6 +41,8 @@
 
     {:methods #{:post} :path "/v1/login" :handler "sessions/create"}
 
+    {:methods #{:post} :path "/v1/bulk_import" :handler "bulk-import/create"}
+
     (crud-routes "pages")
     (crud-routes "widgets")
   ]))

@@ -295,6 +295,14 @@ lein midje
 lein repl
 ```
 
+## Bulk Import
+
+There is a bulk import API that you can use if you need to load larger amounts of data (i.e. migrate from another CMS):
+
+```
+curl -i -X POST -H 'Content-Type: application/json' -H "Authorization: Bearer $TOKEN" -d '{"model": "widgets", "data": [{"title": "Latest Movies", "published_version": 1}, {"title": "Latest Series"}]}' http://localhost:5000/v1/bulk_import
+```
+
 ## TODO
 
 * Validation
