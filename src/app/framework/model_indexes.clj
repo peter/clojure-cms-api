@@ -1,5 +1,5 @@
 (ns app.framework.model-indexes
-  (:require [app.components.db :as db]
+  (:require [app.framework.db-api :as db]
             [app.framework.model-support :as model-support]
             [app.framework.model-reflect :refer [model-spec all-models]]))
 

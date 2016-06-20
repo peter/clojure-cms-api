@@ -4,7 +4,7 @@
             [app.framework.model-versions :refer [versioned-attributes versioned-coll]]
             [app.util.db :as db-util]
             [app.util.date :as d]
-            [app.components.db :as db]))
+            [app.framework.db-api :as db]))
 
 (defn increment-version? [model-spec doc]
   (not-empty (select-keys (model-changes model-spec doc)

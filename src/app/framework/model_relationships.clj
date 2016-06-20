@@ -2,7 +2,7 @@
   (:require [app.framework.model-support :as model-support]
             [app.framework.model-reflect :as model-reflect]
             [app.framework.model-versions :refer [apply-version versioned-coll published-model?]]
-            [app.components.db :as db]
+            [app.framework.db-api :as db]
             [app.util.core :as u]))
 
 (defn- id-field [relationship]

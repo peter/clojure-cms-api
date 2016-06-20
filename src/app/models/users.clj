@@ -1,6 +1,6 @@
 (ns app.models.users
   (:require [app.framework.model-spec :refer [generate-spec]]
-            [app.components.db :as db]
+            [app.framework.db-api :as db]
             [app.util.core :as u]
             [app.util.encrypt :as encrypt]
             [app.util.date :as date]))

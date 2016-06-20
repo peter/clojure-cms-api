@@ -1,6 +1,6 @@
 (ns app.framework.model-api
   (:refer-clojure :exclude [find update delete count])
-  (:require [app.components.db :as db]
+  (:require [app.framework.db-api :as db]
             [app.framework.model-versions :refer [select-version]]
             [app.framework.model-support :refer [coll id-attribute id-query valid-id?]]
             [app.framework.model-versions :refer [unversioned-attributes versioned-coll

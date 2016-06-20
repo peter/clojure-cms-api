@@ -1,7 +1,7 @@
 (ns app.framework.model-support
   (:require [app.util.core :as u]
             [app.util.db :as db-util]
-            [app.components.db :as db]
+            [app.framework.db-api :as db]
             [app.framework.model-schema :refer [schema-attributes]]))
 
 (defn coll [model-spec]

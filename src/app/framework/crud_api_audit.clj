@@ -2,7 +2,7 @@
   (:require [app.framework.model-validations :refer [model-errors]]
             [app.util.date :as d]
             [app.framework.model-changes :refer [model-changes]]
-            [app.components.db :as db]))
+            [app.framework.db-api :as db]))
 
 (defn- get-user [request]
   (get-in request [:user :email]))
