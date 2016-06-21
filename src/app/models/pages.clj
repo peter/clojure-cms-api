@@ -12,21 +12,23 @@
     :type "object"
     :properties {
       :title {:type "string"}
-      :body {:type "string"}
+      :description {:type "string"}
+      :slug {:type "string"}
       :widgets_ids {
         :type "array"
         :items {
           :type "integer"
         }
       }
+      :legacy {:type "object"}
     }
     :additionalProperties false
-    :required [:title]
+    ;:required [:title]
   }
   :relationships {
     :widgets {}
   }
   :indexes [
-    {:fields [:title] :unique true}
+    ;{:fields [:title] :unique true}
   ]
 }))

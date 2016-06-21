@@ -32,7 +32,7 @@ exit
 ```
 
 Check out the [pages](src/app/models/pages.clj) and [widgets](src/app/models/widgets.clj)
-models that we will be working with. Here is the essence of the pages model:
+models that we will be working with. Here is what a pages model might look like:
 
 ```clojure
 (def model-type :pages)
@@ -124,7 +124,7 @@ Here is a simple CRUD flow for pages:
 
 ```bash
 # create
-curl -i -X POST -H 'Content-Type: application/json' -H "Authorization: Bearer $TOKEN" -d '{"pages": {"title": "foo", "body": "bar"}}' http://localhost:5000/v1/pages
+curl -i -X POST -H 'Content-Type: application/json' -H "Authorization: Bearer $TOKEN" -d '{"pages": {"title": "foo", "description": "bar"}}' http://localhost:5000/v1/pages
 
 # get
 curl -i http://localhost:5000/v1/pages/1

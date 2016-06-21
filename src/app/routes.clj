@@ -28,11 +28,11 @@
 (defn- crud-routes [model & {:keys [actions]
                              :or {actions [:list :get :create :update :delete]}}]
   (vals (select-keys {
-    :list {:methods #{:get} :path (str "/v1/" model) :handler (str model "/api:list")}
-    :get {:methods #{:get} :path (str "/v1/" model "/:id") :handler (str model "/api:get")}
-    :create {:methods #{:post} :path (str "/v1/" model) :handler (str model "/api:create")}
-    :update {:methods #{:patch :put} :path (str "/v1/" model "/:id") :handler (str model "/api:update")}
-    :delete {:methods #{:delete} :path (str "/v1/" model "/:id") :handler (str model "/api:delete")}
+    :list {:methods #{:get} :path (str "/v1/" (name model)) :handler (str (name model) "/api:list")}
+    :get {:methods #{:get} :path (str "/v1/" (name model) "/:id") :handler (str (name model) "/api:get")}
+    :create {:methods #{:post} :path (str "/v1/" (name model)) :handler (str (name model) "/api:create")}
+    :update {:methods #{:patch :put} :path (str "/v1/" (name model) "/:id") :handler (str (name model) "/api:update")}
+    :delete {:methods #{:delete} :path (str "/v1/" (name model) "/:id") :handler (str (name model) "/api:delete")}
   } actions)))
 
 (defn routes []
@@ -43,8 +43,9 @@
 
     {:methods #{:post} :path "/v1/bulk_import" :handler "bulk-import/create"}
 
-    (crud-routes "pages")
-    (crud-routes "widgets")
+    (crud-routes :sections)
+    (crud-routes :pages)
+    (crud-routes :widgets)
   ]))
 
 (defn routes-with-handlers []

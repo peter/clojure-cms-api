@@ -14,11 +14,12 @@
       :title {:type "string"}
       :widgets_type {:type "string"}
       :body {:type "string"}
+      :legacy {:type "object"}
     }
     :additionalProperties false
-    :required [:title]
+    ;:required [:title]
   }
   :indexes [
-    {:fields [:title] :unique true}
+    ;{:fields [:title] :unique true}
   ]
 }))
